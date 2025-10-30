@@ -725,6 +725,40 @@ Get control list for consigners.
 
 ---
 
+**Example - Search by Customer Number:**
+```bash
+GET /api/v1.0/datatable-consignment-statements?filter[customer_number]=12345&range=50
+```
+
+**Example Response:**
+```json
+{
+  "data": [
+    {
+      "consignment_id": "123",
+      "customer_number": "12345",
+      "consignor_label": "John Doe",
+      "order_id": "456",
+      "status": "finished",
+      "owner_email": "john.doe@example.com",
+      "total": "5000.00",
+      "actually_paid": "4500.00",
+      "received_from_buyers": "5000.00"
+    }
+  ],
+  "count": 1,
+  "recordsTotal": 100,
+  "recordsFiltered": 1
+}
+```
+
+**Notes:**
+- The prepare function handles special fields: `additional_charges`, `append_text`, `prepend_text`, `label`
+- Table name: `consignment_statements`
+- Supports multiple status filters simultaneously
+- All text filters support regex pattern matching
+
+
 ## Items
 
 ### List Items (DataTable)

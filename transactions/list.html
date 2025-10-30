@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List Transactions - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="list.html">Transactions</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item"><a href="list.html">Transactions</a></li>
+      <li class="breadcrumb-item active" aria-current="page">List Transactions</li>
+    </ol>
+  </nav>
+
+  <h1>List Transactions</h1>
+  <p class="lead">Get payment transactions for an order or client.</p>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/transactions</code>
+    </div>
+    <div class="card-body">
+      <h5>Query Parameters</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>filter[order]</code></td>
+            <td>string</td>
+            <td>Order ID</td>
+            <td><code>?filter[order]=789</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[client]</code></td>
+            <td>string</td>
+            <td>Client ID</td>
+            <td><code>?filter[client]=123</code></td>
+          </tr>
+          <tr>
+            <td><code>sort</code></td>
+            <td>string</td>
+            <td>Sort order (default: -created)</td>
+            <td><code>?sort=-created</code></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/transactions?filter[order]=789&amp;sort=-created</code></pre>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "901",
+      "order": "789",
+      "transaction_type": "Payment",
+      "amount": "500.00",
+      "transferred_currency": "USD",
+      "transferred_amount": "500.00",
+      "bank": {
+        "id": "5",
+        "name": "Main Bank"
+      },
+      "bank_account_number": "****1234",
+      "credit_card_type": "Visa",
+      "credit_card_last_4_digits": "4567",
+      "transaction_date": "2025-10-15",
+      "cheque_number": null,
+      "cheque_date": null,
+      "info": "Online payment",
+      "cheque_url": null,
+      "illustrated_cheque_url": null,
+      "created": "2025-10-15T10:30:00Z"
+    }
+  ]
+}</code></pre>
+    </div>
+  </div>
+
+  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>

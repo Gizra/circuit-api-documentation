@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Sale - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="list.html">Sales</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item"><a href="list.html">Sales</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Create Sale</li>
+    </ol>
+  </nav>
+
+  <h1>Create Sale</h1>
+  <p class="lead">Create a new sale/auction.</p>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-primary badge-method">POST</span>
+      <code class="endpoint">/datatable-sales</code>
+    </div>
+    <div class="card-body">
+      <h5>Request Body Fields</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>label</code></td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>Sale name/title</td>
+          </tr>
+          <tr>
+            <td><code>sale_date</code></td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>Sale date (ISO 8601 format)</td>
+          </tr>
+          <tr>
+            <td><code>status</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Sale status (draft, published, closed)</td>
+          </tr>
+          <tr>
+            <td><code>catalog</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Catalog ID</td>
+          </tr>
+          <tr>
+            <td><code>venue</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Venue location</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Example Request</h5>
+      <pre><code class="language-bash">POST /api/v1.0/datatable-sales</code></pre>
+      <pre><code class="language-json">{
+  "label": "Fall Auction 2025",
+  "sale_date": "2025-11-15T19:00:00Z",
+  "status": "draft",
+  "catalog": "79",
+  "venue": "Main Auction House"
+}</code></pre>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [{
+    "id": "457",
+    "label": "Fall Auction 2025",
+    "sale_date": "2025-11-15T19:00:00Z",
+    "status": "draft",
+    "created": "2025-10-30T10:00:00Z"
+  }]
+}</code></pre>
+    </div>
+  </div>
+
+  <a href="list.html" class="btn btn-outline-secondary">Back to Sales List</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
