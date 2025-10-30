@@ -188,16 +188,8 @@ GET /api/v1.0/datatable-clients/123
   "last_name": "Smith",
   "email": "jane.smith@example.com",
   "phone": "+1-555-0199",
+  "mobile": "+1-555-0200",
   "status": "new",
-  "address": {
-    "country": "US",
-    "administrative_area": "CA",
-    "locality": "Los Angeles",
-    "postal_code": "90001",
-    "thoroughfare": "456 Oak Ave"
-  },
-  "source": "5",
-  "default_payment_method": "3",
   "categories": ["10", "15"],
   "subscription_type": "email"
 }
@@ -208,11 +200,20 @@ GET /api/v1.0/datatable-clients/123
 {
   "data": [{
     "id": "456",
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "email": "jane.smith@example.com",
     "philaworksplace_id": "C12348",
-    ...
+    "status": {
+      "id": "new",
+      "label": "New"
+    },
+    "created": "2025-10-30T10:00:00Z"
   }]
 }
 ```
+
+**Note:** Client addresses are managed separately via the `/client-address` endpoint. After creating a client, use `POST /api/v1.0/client-address` to add addresses for the client.
 
 ### Update Client
 **Endpoint:** `PATCH /api/v1.0/datatable-clients/{id}`
@@ -316,6 +317,157 @@ Get entities connected to a client.
 ```bash
 GET /api/v1.0/connected-entities?uuid=abc-def-123
 ```
+
+---
+
+## Client Addresses
+
+### List Client Addresses
+Retrieve addresses for a specific client.
+
+**Endpoint:** `GET /api/v1.0/client-address`
+
+**Query Parameters:**
+- `filter[client]` - Client ID to filter addresses
+- `sort` - Sort field and direction
+
+**Example:**
+```bash
+GET /api/v1.0/client-address?filter[client]=123
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "501",
+      "label": "Default address - US - 10001",
+      "client": "123",
+      "address": {
+        "country": "US",
+        "administrative_area": "NY",
+        "locality": "New York",
+        "postal_code": "10001",
+        "thoroughfare": "123 Main St",
+        "premise": "",
+        "name_line": "John Doe",
+        "first_name": "John",
+        "last_name": "Doe"
+      },
+      "address_types": [
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "shipping",
+          "label": "Shipping"
+        }
+      ],
+      "default_address": true,
+      "validated": true,
+      "rendered": "John Doe\n123 Main St\nNew York, NY 10001\nUnited States",
+      "created": "2025-10-01T10:00:00Z",
+      "updated": "2025-10-15T14:30:00Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+### Get Single Address
+**Endpoint:** `GET /api/v1.0/client-address/{id}`
+
+**Example:**
+```bash
+GET /api/v1.0/client-address/501
+```
+
+### Create Client Address
+**Endpoint:** `POST /api/v1.0/client-address`
+
+**Request:**
+```json
+{
+  "client": "123",
+  "address": {
+    "country": "US",
+    "administrative_area": "NY",
+    "locality": "New York",
+    "postal_code": "10001",
+    "thoroughfare": "123 Main St",
+    "premise": "Apt 4B",
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "address_types": ["billing", "shipping"],
+  "default_address": true
+}
+```
+
+**Response:**
+```json
+{
+  "data": [{
+    "id": "502",
+    "client": "123",
+    "address": {
+      "country": "US",
+      "administrative_area": "NY",
+      "locality": "New York",
+      "postal_code": "10001",
+      "thoroughfare": "123 Main St",
+      "premise": "Apt 4B",
+      "first_name": "John",
+      "last_name": "Doe",
+      "name_line": "John Doe"
+    },
+    "address_types": [
+      {
+        "id": "billing",
+        "label": "Billing"
+      },
+      {
+        "id": "shipping",
+        "label": "Shipping"
+      }
+    ],
+    "default_address": true,
+    "created": "2025-10-30T10:00:00Z"
+  }]
+}
+```
+
+### Update Client Address
+**Endpoint:** `PATCH /api/v1.0/client-address/{id}`
+
+**Request:**
+```json
+{
+  "address": {
+    "thoroughfare": "456 Broadway",
+    "premise": "Suite 100"
+  },
+  "default_address": true
+}
+```
+
+### Delete Client Address
+**Endpoint:** `DELETE /api/v1.0/client-address/{id}`
+
+**Response:**
+```json
+{
+  "data": [],
+  "status": 204
+}
+```
+
+**Notes:**
+- You cannot delete a client's default address if it's the only address
+- If you delete the default address and other addresses exist, the system will automatically assign another address as the default
+- Addresses must be associated with a client using the `client` field
 
 ---
 

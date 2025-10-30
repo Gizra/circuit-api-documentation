@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Client - Circuit Auction API</title>
+  <title>Create Client Address - Circuit Auction API</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -30,7 +30,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="list.html">Clients</a></li>
+        <li class="nav-item"><a class="nav-link" href="list.html">Addresses</a></li>
       </ul>
     </div>
   </div>
@@ -40,18 +40,18 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="../index.html">API</a></li>
-      <li class="breadcrumb-item"><a href="list.html">Clients</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Create Client</li>
+      <li class="breadcrumb-item"><a href="list.html">Client Addresses</a></li>
+      <li class="breadcrumb-item active">Create Address</li>
     </ol>
   </nav>
 
-  <h1>Create Client</h1>
-  <p class="lead">Create a new client record.</p>
+  <h1>Create Client Address</h1>
+  <p class="lead">Create a new address for a client.</p>
 
   <div class="card mb-4">
     <div class="card-header">
       <span class="badge bg-primary badge-method">POST</span>
-      <code class="endpoint">/datatable-clients</code>
+      <code class="endpoint">/client-address</code>
     </div>
     <div class="card-body">
       <h5>Request Body Fields</h5>
@@ -67,104 +67,155 @@
           </thead>
           <tbody>
           <tr>
+            <td><code>client</code></td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>Client ID</td>
+          </tr>
+          <tr>
+            <td><code>address</code></td>
+            <td>object</td>
+            <td>Yes</td>
+            <td>Address object (see below)</td>
+          </tr>
+          <tr>
+            <td><code>address_types</code></td>
+            <td>array</td>
+            <td>No</td>
+            <td>Array of address type IDs (billing, shipping)</td>
+          </tr>
+          <tr>
+            <td><code>default_address</code></td>
+            <td>boolean</td>
+            <td>No</td>
+            <td>Set as default address for client</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Address Object Fields</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>country</code></td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>Two-letter country code (e.g., US, UK)</td>
+          </tr>
+          <tr>
+            <td><code>administrative_area</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>State/Province code</td>
+          </tr>
+          <tr>
+            <td><code>locality</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>City</td>
+          </tr>
+          <tr>
+            <td><code>postal_code</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Postal/ZIP code</td>
+          </tr>
+          <tr>
+            <td><code>thoroughfare</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Street address</td>
+          </tr>
+          <tr>
+            <td><code>premise</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Apartment/Suite number</td>
+          </tr>
+          <tr>
             <td><code>first_name</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Client first name</td>
+            <td>First name</td>
           </tr>
           <tr>
             <td><code>last_name</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Client last name</td>
+            <td>Last name</td>
           </tr>
           <tr>
-            <td><code>company</code></td>
+            <td><code>organisation_name</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Company name</td>
-          </tr>
-          <tr>
-            <td><code>email</code></td>
-            <td>string</td>
-            <td>Yes</td>
-            <td>Email address</td>
-          </tr>
-          <tr>
-            <td><code>phone</code></td>
-            <td>string</td>
-            <td>No</td>
-            <td>Phone number</td>
-          </tr>
-          <tr>
-            <td><code>mobile</code></td>
-            <td>string</td>
-            <td>No</td>
-            <td>Mobile number</td>
-          </tr>
-          <tr>
-            <td><code>status</code></td>
-            <td>string</td>
-            <td>No</td>
-            <td>Client status (new, pending, approved, unapproved)</td>
-          </tr>
-          <tr>
-            <td><code>categories</code></td>
-            <td>array</td>
-            <td>No</td>
-            <td>Array of category IDs</td>
-          </tr>
-          <tr>
-            <td><code>subscription_type</code></td>
-            <td>string</td>
-            <td>No</td>
-            <td>Subscription type (email, print, both)</td>
+            <td>Company/Organization name</td>
           </tr>
           </tbody>
         </table>
       </div>
 
       <h5 class="mt-4">Example Request</h5>
+      <pre><code class="language-bash">POST /api/v1.0/client-address</code></pre>
       <pre><code class="language-json">{
-  "first_name": "Jane",
-  "last_name": "Smith",
-  "email": "jane.smith@example.com",
-  "phone": "+1-555-0199",
-  "mobile": "+1-555-0200",
-  "status": "new",
-  "categories": ["10", "15"],
-  "subscription_type": "email"
+  "client": "123",
+  "address": {
+    "country": "US",
+    "administrative_area": "NY",
+    "locality": "New York",
+    "postal_code": "10001",
+    "thoroughfare": "123 Main St",
+    "premise": "Apt 4B",
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "address_types": ["billing", "shipping"],
+  "default_address": true
 }</code></pre>
 
       <h5 class="mt-4">Response</h5>
       <pre><code class="language-json">{
   "data": [{
-    "id": "456",
-    "first_name": "Jane",
-    "last_name": "Smith",
-    "email": "jane.smith@example.com",
-    "philaworksplace_id": "C12348",
-    "status": {
-      "id": "new",
-      "label": "New"
+    "id": "502",
+    "client": "123",
+    "address": {
+      "country": "US",
+      "administrative_area": "NY",
+      "locality": "New York",
+      "postal_code": "10001",
+      "thoroughfare": "123 Main St",
+      "premise": "Apt 4B",
+      "first_name": "John",
+      "last_name": "Doe",
+      "name_line": "John Doe"
     },
+    "address_types": [
+      {
+        "id": "billing",
+        "label": "Billing"
+      },
+      {
+        "id": "shipping",
+        "label": "Shipping"
+      }
+    ],
+    "default_address": true,
     "created": "2025-10-30T10:00:00Z"
   }]
 }</code></pre>
     </div>
   </div>
 
-  <div class="alert alert-info">
-    <h5><i class="fas fa-info-circle"></i> Managing Client Addresses</h5>
-    <p>Addresses are managed separately using the <strong>Client Address</strong> endpoint. After creating a client, use the following endpoint to add addresses:</p>
-    <ul class="mb-0">
-      <li><code>POST /api/v1.0/client-address</code> - Create a new address</li>
-      <li>See <a href="../addresses/list.html">Client Address API</a> for full documentation</li>
-    </ul>
-  </div>
-
-  <a href="list.html" class="btn btn-outline-secondary">Back to Clients</a>
-  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
+  <a href="list.html" class="btn btn-outline-secondary">Back to Addresses List</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
