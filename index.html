@@ -41,11 +41,21 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="#authentication">Auth</a></li>
-        <li class="nav-item"><a class="nav-link" href="#clients">Clients</a></li>
-        <li class="nav-item"><a class="nav-link" href="#orders">Orders</a></li>
-        <li class="nav-item"><a class="nav-link" href="#items">Items</a></li>
-        <li class="nav-item"><a class="nav-link" href="#sales">Sales</a></li>
-        <li class="nav-item"><a class="nav-link" href="#transactions">Transactions</a></li>
+        <li class="nav-item"><a class="nav-link" href="clients/list.html">Clients</a></li>
+        <li class="nav-item"><a class="nav-link" href="orders/list.html">Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="items/list.html">Items</a></li>
+        <li class="nav-item"><a class="nav-link" href="sales/list.html">Sales</a></li>
+        <li class="nav-item"><a class="nav-link" href="transactions/list.html">Transactions</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            More
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="common.html">Common Parameters</a></li>
+            <li><a class="dropdown-item" href="errors.html">Error Handling</a></li>
+            <li><a class="dropdown-item" href="data-types.html">Data Types</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
@@ -89,10 +99,30 @@
           <a class="nav-link ps-4" href="items/clone-move.html">Clone/Move Items</a>
         </div>
 
-        <a class="nav-link" href="sales.html">Sales</a>
-        <a class="nav-link" href="transactions.html">Transactions</a>
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#sales-collapse">Sales</a>
+        <div class="collapse" id="sales-collapse">
+          <a class="nav-link ps-4" href="sales/list.html">List Sales</a>
+          <a class="nav-link ps-4" href="sales/get.html">Get Sale</a>
+          <a class="nav-link ps-4" href="sales/create.html">Create Sale</a>
+          <a class="nav-link ps-4" href="sales/update.html">Update Sale</a>
+        </div>
+
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#transactions-collapse">Transactions</a>
+        <div class="collapse" id="transactions-collapse">
+          <a class="nav-link ps-4" href="transactions/list.html">List Transactions</a>
+          <a class="nav-link ps-4" href="transactions/create.html">Create Transaction</a>
+        </div>
+
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#other-collapse">Other Endpoints</a>
+        <div class="collapse" id="other-collapse">
+          <a class="nav-link ps-4" href="files/get.html">Get File</a>
+          <a class="nav-link ps-4" href="queue/get-item.html">Queue Item</a>
+          <a class="nav-link ps-4" href="bulk/dispatcher.html">Bulk Dispatcher</a>
+        </div>
+
         <a class="nav-link" href="common.html">Common Parameters</a>
         <a class="nav-link" href="errors.html">Error Handling</a>
+        <a class="nav-link" href="data-types.html">Data Types</a>
       </nav>
     </div>
 
@@ -163,7 +193,58 @@
             <div class="card-body">
               <h5 class="card-title">Sales</h5>
               <p class="card-text">Manage auctions, sessions, statistics, and catalog parts.</p>
-              <a href="sales.html" class="btn btn-primary">View Sales API</a>
+              <a href="sales/list.html" class="btn btn-primary">View Sales API</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Transactions</h5>
+              <p class="card-text">Record and manage payment transactions, cheques, and wire transfers.</p>
+              <a href="transactions/list.html" class="btn btn-primary">View Transactions API</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Files & Queue</h5>
+              <p class="card-text">Handle file uploads, queue monitoring, and bulk operations.</p>
+              <a href="files/get.html" class="btn btn-primary">View Files API</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-5">
+
+      <h2>Documentation</h2>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title"><i class="fas fa-filter"></i> Common Parameters</h6>
+              <p class="card-text small">Pagination, sorting, filtering, and field selection.</p>
+              <a href="common.html" class="btn btn-sm btn-outline-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title"><i class="fas fa-exclamation-triangle"></i> Error Handling</h6>
+              <p class="card-text small">Error responses, status codes, and troubleshooting.</p>
+              <a href="errors.html" class="btn btn-sm btn-outline-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title"><i class="fas fa-database"></i> Data Types</h6>
+              <p class="card-text small">Dates, currency, booleans, and data formats.</p>
+              <a href="data-types.html" class="btn btn-sm btn-outline-primary">Learn More</a>
             </div>
           </div>
         </div>
@@ -172,16 +253,107 @@
       <hr class="my-5">
 
       <h2>Key Features</h2>
-      <ul class="list-group">
-        <li class="list-group-item">Advanced filtering, sorting, and pagination</li>
-        <li class="list-group-item">Bulk operations for efficiency</li>
-        <li class="list-group-item">File and image uploads</li>
-        <li class="list-group-item">Activity logging and audit trails</li>
-        <li class="list-group-item">Comprehensive error handling</li>
-      </ul>
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="list-group">
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> Advanced filtering, sorting, and pagination</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> Bulk operations for efficiency</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> File and image uploads</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> Activity logging and audit trails</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> Comprehensive error handling</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="list-group">
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> RESTful API design</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> JWT authentication</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> JSON request/response format</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> Queue-based background jobs</li>
+            <li class="list-group-item"><i class="fas fa-check text-success"></i> Rate limiting protection</li>
+          </ul>
+        </div>
+      </div>
 
       <div class="mt-5">
-        <small class="text-muted">Last Updated: October 30, 2025</small>
+        <h2>Available Endpoints</h2>
+        <div class="row">
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                <h6>Clients</h6>
+                <small class="text-muted">6 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-file-invoice fa-2x text-success mb-2"></i>
+                <h6>Orders</h6>
+                <small class="text-muted">7 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-box fa-2x text-warning mb-2"></i>
+                <h6>Items</h6>
+                <small class="text-muted">4 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-gavel fa-2x text-danger mb-2"></i>
+                <h6>Sales</h6>
+                <small class="text-muted">4 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-credit-card fa-2x text-info mb-2"></i>
+                <h6>Transactions</h6>
+                <small class="text-muted">2 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-file fa-2x text-secondary mb-2"></i>
+                <h6>Files</h6>
+                <small class="text-muted">1 endpoint</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                <h6>Queue</h6>
+                <small class="text-muted">1 endpoint</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-layer-group fa-2x text-success mb-2"></i>
+                <h6>Bulk</h6>
+                <small class="text-muted">1 endpoint</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <small class="text-muted">Last Updated: October 30, 2025 | API Version: 1.0</small>
       </div>
     </div>
   </div>
