@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List Orders - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="list.html">Orders</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item"><a href="list.html">Orders</a></li>
+      <li class="breadcrumb-item active" aria-current="page">List Orders</li>
+    </ol>
+  </nav>
+
+  <h1>List Orders</h1>
+  <p class="lead">Retrieve a paginated list of orders with filtering.</p>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/orders</code>
+    </div>
+    <div class="card-body">
+      <h5>Query Parameters</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>range</code></td>
+              <td>integer</td>
+              <td>Items per page</td>
+              <td><code>?range=25</code></td>
+            </tr>
+            <tr>
+              <td><code>page</code></td>
+              <td>integer</td>
+              <td>Page number</td>
+              <td><code>?page=1</code></td>
+            </tr>
+            <tr>
+              <td><code>sort</code></td>
+              <td>string</td>
+              <td>Sort field and direction</td>
+              <td><code>?sort=-order_id</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[type]</code></td>
+              <td>string</td>
+              <td>Order type (bidder, consignor, credit_note, transport_invoice)</td>
+              <td><code>?filter[type]=bidder</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[status]</code></td>
+              <td>string</td>
+              <td>Order status (new, in_process, finished, locked, canceled)</td>
+              <td><code>?filter[status]=new</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[sale]</code></td>
+              <td>string</td>
+              <td>Sale ID</td>
+              <td><code>?filter[sale]=456</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[owner]</code></td>
+              <td>string</td>
+              <td>Client ID</td>
+              <td><code>?filter[owner]=123</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[order_id]</code></td>
+              <td>string</td>
+              <td>Order/invoice number</td>
+              <td><code>?filter[order_id]=12345</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[customer_number]</code></td>
+              <td>string</td>
+              <td>Customer number</td>
+              <td><code>?filter[customer_number]=C12345</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[total_invoice][value][from]</code></td>
+              <td>number</td>
+              <td>Min amount</td>
+              <td><code>?filter[total_invoice][value][from]=100</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[total_invoice][value][to]</code></td>
+              <td>number</td>
+              <td>Max amount</td>
+              <td><code>?filter[total_invoice][value][to]=1000</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[payment_received][value][from]</code></td>
+              <td>number</td>
+              <td>Min paid amount</td>
+              <td><code>?filter[payment_received][value][from]=0</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[payment_received][value][to]</code></td>
+              <td>number</td>
+              <td>Max paid amount</td>
+              <td><code>?filter[payment_received][value][to]=500</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[bidder_ids]</code></td>
+              <td>string</td>
+              <td>Bidder number search</td>
+              <td><code>?filter[bidder_ids]=12345</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[payment_type_letter]</code></td>
+              <td>string</td>
+              <td>Payment method</td>
+              <td><code>?filter[payment_type_letter]=CC</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[sale_name]</code></td>
+              <td>string</td>
+              <td>Sale name search</td>
+              <td><code>?filter[sale_name]=Summer</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[shipping_weight][value][from]</code></td>
+              <td>number</td>
+              <td>Min weight (in kg)</td>
+              <td><code>?filter[shipping_weight][value][from]=1</code></td>
+            </tr>
+            <tr>
+              <td><code>filter[shipping_weight][value][to]</code></td>
+              <td>number</td>
+              <td>Max weight (in kg)</td>
+              <td><code>?filter[shipping_weight][value][to]=10</code></td>
+            </tr>
+            <tr>
+              <td><code>fields</code></td>
+              <td>string</td>
+              <td>Specific fields to return</td>
+              <td><code>?fields=id,label,status</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Example Requests</h5>
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#example1">Bidder Orders for a Sale</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#example2">Orders with Amount Range</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#example3">Search by Bidder Number</a></li>
+      </ul>
+      <div class="tab-content mt-2">
+        <div class="tab-pane fade show active" id="example1">
+          <pre><code class="language-bash">GET /api/v1.0/orders?filter[type]=bidder&amp;filter[sale]=456&amp;filter[status]=new&amp;range=25&amp;sort=-order_id</code></pre>
+        </div>
+        <div class="tab-pane fade" id="example2">
+          <pre><code class="language-bash">GET /api/v1.0/orders?filter[type]=bidder&amp;filter[total_invoice][value][from]=100&amp;filter[total_invoice][value][to]=1000</code></pre>
+        </div>
+        <div class="tab-pane fade" id="example3">
+          <pre><code class="language-bash">GET /api/v1.0/orders?filter[bidder_ids]=12345&amp;range=50</code></pre>
+        </div>
+      </div>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "789",
+      "label": "Order #12345",
+      "order_id": "12345",
+      "type": "bidder",
+      "status": {
+        "id": "new",
+        "label": "New"
+      },
+      "sale": {
+        "id": "456",
+        "label": "Summer Auction 2025"
+      },
+      "owner": {
+        "id": "123",
+        "label": "John Doe",
+        "email": "john@example.com"
+      },
+      "grand_total": "1250.00",
+      "amount_due": "1250.00",
+      "payment_received": "0.00",
+      "customer_number": "C12345",
+      "bidder_ids": ["12345", "12346"],
+      "item_count": 5,
+      "shipping_weight": 2.5,
+      "payment_type_letter": "CC",
+      "invoice_data": {
+        "header_left": {...},
+        "header_right": {...},
+        "items": {...},
+        "totals_for_display": [...]
+      },
+      "created": "2025-10-01T10:00:00Z",
+      "changed": "2025-10-15T14:30:00Z"
+    }
+  ],
+  "count": 42
+}</code></pre>
+    </div>
+  </div>
+
+  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
