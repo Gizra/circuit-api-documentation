@@ -42,9 +42,23 @@
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="#authentication">Auth</a></li>
         <li class="nav-item"><a class="nav-link" href="clients/list.html">Clients</a></li>
-        <li class="nav-item"><a class="nav-link" href="consignments/list.html">Consignments</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Consignments</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="consignments/list.html">List Consignments</a></li>
+            <li><a class="dropdown-item" href="consignments/create.html">Create Consignment</a></li>
+            <li><a class="dropdown-item" href="consignments/update.html">Update Consignment</a></li>
+          </ul>
+        </li>
         <li class="nav-item"><a class="nav-link" href="orders/list.html">Orders</a></li>
-        <li class="nav-item"><a class="nav-link" href="items/list.html">Items</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Items</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="items/list.html">List Items</a></li>
+            <li><a class="dropdown-item" href="items/create.html">Create Item</a></li>
+            <li><a class="dropdown-item" href="items/update.html">Update Item</a></li>
+          </ul>
+        </li>
         <li class="nav-item"><a class="nav-link" href="sales/list.html">Sales</a></li>
         <li class="nav-item"><a class="nav-link" href="transactions/list.html">Transactions</a></li>
         <li class="nav-item dropdown">
@@ -93,6 +107,8 @@
         <a class="nav-link collapsed" data-bs-toggle="collapse" href="#consignments-collapse">Consignments</a>
         <div class="collapse" id="consignments-collapse">
           <a class="nav-link ps-4" href="consignments/list.html">List Consignments</a>
+          <a class="nav-link ps-4" href="consignments/create.html">Create Consignment</a>
+          <a class="nav-link ps-4" href="consignments/update.html">Update Consignment</a>
         </div>
 
         <a class="nav-link collapsed" data-bs-toggle="collapse" href="#orders-collapse">Orders</a>
@@ -110,6 +126,8 @@
         <div class="collapse" id="items-collapse">
           <a class="nav-link ps-4" href="items/list.html">List Items</a>
           <a class="nav-link ps-4" href="items/get.html">Get Item</a>
+          <a class="nav-link ps-4" href="items/create.html">Create Item</a>
+          <a class="nav-link ps-4" href="items/update.html">Update Item</a>
           <a class="nav-link ps-4" href="items/bulk.html">Bulk Operations</a>
           <a class="nav-link ps-4" href="items/clone-move.html">Clone/Move Items</a>
         </div>
