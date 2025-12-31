@@ -42,6 +42,7 @@
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="#authentication">Auth</a></li>
         <li class="nav-item"><a class="nav-link" href="clients/list.html">Clients</a></li>
+        <li class="nav-item"><a class="nav-link" href="consignments/list.html">Consignments</a></li>
         <li class="nav-item"><a class="nav-link" href="orders/list.html">Orders</a></li>
         <li class="nav-item"><a class="nav-link" href="items/list.html">Items</a></li>
         <li class="nav-item"><a class="nav-link" href="sales/list.html">Sales</a></li>
@@ -87,6 +88,11 @@
           <a class="nav-link ps-4" href="addresses/create.html">Create Address</a>
           <a class="nav-link ps-4" href="addresses/update.html">Update Address</a>
           <a class="nav-link ps-4" href="addresses/delete.html">Delete Address</a>
+        </div>
+
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#consignments-collapse">Consignments</a>
+        <div class="collapse" id="consignments-collapse">
+          <a class="nav-link ps-4" href="consignments/list.html">List Consignments</a>
         </div>
 
         <a class="nav-link collapsed" data-bs-toggle="collapse" href="#orders-collapse">Orders</a>
@@ -185,6 +191,15 @@
               <h5 class="card-title">Client Addresses</h5>
               <p class="card-text">Manage client addresses, set default addresses, and handle address types.</p>
               <a href="addresses/list.html" class="btn btn-primary">View Addresses API</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Consignments</h5>
+              <p class="card-text">Manage consignor inventory, commissions, shipping methods, and workflow tracking.</p>
+              <a href="consignments/list.html" class="btn btn-primary">View Consignments API</a>
             </div>
           </div>
         </div>
@@ -310,6 +325,15 @@
                 <i class="fas fa-map-marker-alt fa-2x text-info mb-2"></i>
                 <h6>Addresses</h6>
                 <small class="text-muted">5 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-handshake fa-2x text-warning mb-2"></i>
+                <h6>Consignments</h6>
+                <small class="text-muted">1 endpoint</small>
               </div>
             </div>
           </div>
