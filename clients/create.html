@@ -46,7 +46,7 @@
   </nav>
 
   <h1>Create Client</h1>
-  <p class="lead">Create a new client record.</p>
+  <p class="lead">Create a new client record with contact information, addresses, banking details, and preferences.</p>
 
   <div class="card mb-4">
     <div class="card-header">
@@ -54,7 +54,7 @@
       <code class="endpoint">/datatable-clients</code>
     </div>
     <div class="card-body">
-      <h5>Request Body Fields</h5>
+      <h5>Basic Contact Fields</h5>
       <div class="table-responsive">
         <table class="table table-sm param-table">
           <thead>
@@ -85,10 +85,34 @@
             <td>Company name</td>
           </tr>
           <tr>
+            <td><code>position_company</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Position in company</td>
+          </tr>
+          <tr>
+            <td><code>name_prefix</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Salutation (Mr., Mrs., Dr., etc.)</td>
+          </tr>
+          <tr>
+            <td><code>override_salutation</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Custom salutation override</td>
+          </tr>
+          <tr>
             <td><code>email</code></td>
             <td>string</td>
-            <td>Yes</td>
-            <td>Email address</td>
+            <td>No*</td>
+            <td>Primary email address (*required for most operations)</td>
+          </tr>
+          <tr>
+            <td><code>secondary_email</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Secondary email address</td>
           </tr>
           <tr>
             <td><code>phone</code></td>
@@ -97,49 +121,385 @@
             <td>Phone number</td>
           </tr>
           <tr>
+            <td><code>primary_phone</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Primary phone number</td>
+          </tr>
+          <tr>
+            <td><code>office_phone</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Office phone number</td>
+          </tr>
+          <tr>
             <td><code>mobile</code></td>
             <td>string</td>
             <td>No</td>
             <td>Mobile number</td>
           </tr>
           <tr>
-            <td><code>status</code></td>
+            <td><code>fax</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Client status (new, pending, approved, unapproved)</td>
+            <td>Fax number</td>
           </tr>
           <tr>
-            <td><code>categories</code></td>
-            <td>array</td>
+            <td><code>birthdate</code></td>
+            <td>integer</td>
             <td>No</td>
-            <td>Array of category IDs</td>
+            <td>Birth date (timestamp in milliseconds)</td>
           </tr>
           <tr>
-            <td><code>subscription_type</code></td>
+            <td><code>client_website</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Subscription type (email, print, both)</td>
+            <td>Client website URL</td>
+          </tr>
+          <tr>
+            <td><code>website_language</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Preferred website language code</td>
           </tr>
           </tbody>
         </table>
       </div>
 
-      <h5 class="mt-4">Example Request</h5>
+      <h5 class="mt-4">Address & Location</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>address</code></td>
+            <td>object</td>
+            <td>Creates/updates default address. See address structure below.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Status & Organization</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>published</code></td>
+            <td>boolean</td>
+            <td>Publication status (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>agent</code></td>
+            <td>integer</td>
+            <td>Agent user ID</td>
+          </tr>
+          <tr>
+            <td><code>responsible_user</code></td>
+            <td>array</td>
+            <td>Array of responsible user IDs</td>
+          </tr>
+          <tr>
+            <td><code>categories</code></td>
+            <td>array</td>
+            <td>Array of category term IDs or labels</td>
+          </tr>
+          <tr>
+            <td><code>interested_in</code></td>
+            <td>array</td>
+            <td>Array of interest term IDs or labels</td>
+          </tr>
+          <tr>
+            <td><code>tags</code></td>
+            <td>array</td>
+            <td>Array of tag term IDs or labels</td>
+          </tr>
+          <tr>
+            <td><code>source</code></td>
+            <td>integer/string</td>
+            <td>Client source term ID or label</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Banking & Financial</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>bank_details</code></td>
+            <td>array</td>
+            <td>Array of bank account objects (multifield). See bank details structure below.</td>
+          </tr>
+          <tr>
+            <td><code>default_payment_method</code></td>
+            <td>string</td>
+            <td>Default payment method</td>
+          </tr>
+          <tr>
+            <td><code>invoice_release_limit</code></td>
+            <td>integer</td>
+            <td>Invoice release limit (in cents)</td>
+          </tr>
+          <tr>
+            <td><code>consignor_commissions</code></td>
+            <td>array</td>
+            <td>Array of commission objects (multifield)</td>
+          </tr>
+          <tr>
+            <td><code>additional_charges</code></td>
+            <td>array</td>
+            <td>Array of additional charge objects (multifield)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Tax Information</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>tax_type</code></td>
+            <td>string</td>
+            <td>Tax type classification</td>
+          </tr>
+          <tr>
+            <td><code>tax_id</code></td>
+            <td>string</td>
+            <td>Tax identification number</td>
+          </tr>
+          <tr>
+            <td><code>tax_state</code></td>
+            <td>string</td>
+            <td>Tax state/region</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Instructions & Notes</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>billing_instructions</code></td>
+            <td>string</td>
+            <td>Internal billing instructions</td>
+          </tr>
+          <tr>
+            <td><code>client_billing_instruction</code></td>
+            <td>string</td>
+            <td>Client-facing billing instructions</td>
+          </tr>
+          <tr>
+            <td><code>shipping_instructions</code></td>
+            <td>string</td>
+            <td>Internal shipping instructions</td>
+          </tr>
+          <tr>
+            <td><code>shipping_instructions_client</code></td>
+            <td>string</td>
+            <td>Client-facing shipping instructions</td>
+          </tr>
+          <tr>
+            <td><code>temp_shipping_instructions</code></td>
+            <td>string</td>
+            <td>Temporary shipping instructions</td>
+          </tr>
+          <tr>
+            <td><code>temp_si_dates_from</code></td>
+            <td>integer</td>
+            <td>Temporary instructions start date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>temp_si_dates_to</code></td>
+            <td>integer</td>
+            <td>Temporary instructions end date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>blocking_reason</code></td>
+            <td>string</td>
+            <td>Reason for blocking client</td>
+          </tr>
+          <tr>
+            <td><code>warning</code></td>
+            <td>string</td>
+            <td>Warning message about client</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Other Fields</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>block_emails</code></td>
+            <td>boolean</td>
+            <td>Block email communications (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>subscription_type</code></td>
+            <td>string</td>
+            <td>Subscription type (email, print, both)</td>
+          </tr>
+          <tr>
+            <td><code>expiration_date</code></td>
+            <td>integer</td>
+            <td>Account expiration date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>philaworksplace_id</code></td>
+            <td>string</td>
+            <td>Customer number / PhilaWorksPlace ID</td>
+          </tr>
+          <tr>
+            <td><code>external_ids</code></td>
+            <td>array</td>
+            <td>Array of external ID objects (multifield)</td>
+          </tr>
+          <tr>
+            <td><code>uuid</code></td>
+            <td>string</td>
+            <td>Unique identifier (upsert: create if not exists, update if exists)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Address Structure</h5>
+      <pre><code class="language-json">{
+  "address": {
+    "country": "US",
+    "thoroughfare": "123 Main Street",
+    "premise": "Apt 4B",
+    "locality": "New York",
+    "administrative_area": "NY",
+    "postal_code": "10001",
+    "name_line": "Jane Smith"
+  }
+}</code></pre>
+
+      <h5 class="mt-4">Bank Details Structure (Multifield)</h5>
+      <pre><code class="language-json">{
+  "bank_details": [
+    {
+      "name": "Bank of America",
+      "code": "BOFA",
+      "number": "123456789",
+      "owner": "Jane Smith",
+      "iban": "GB82 WEST 1234 5698 7654 32",
+      "bic": "BOFAUS3N"
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Basic Client</h5>
       <pre><code class="language-json">{
   "first_name": "Jane",
   "last_name": "Smith",
   "email": "jane.smith@example.com",
   "phone": "+1-555-0199",
   "mobile": "+1-555-0200",
-  "status": "new",
+  "published": 1,
   "categories": ["10", "15"],
-  "subscription_type": "email"
+  "subscription_type": "email",
+  "address": {
+    "country": "US",
+    "thoroughfare": "456 Oak Avenue",
+    "locality": "Boston",
+    "administrative_area": "MA",
+    "postal_code": "02101"
+  }
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Complete Client with Banking</h5>
+      <pre><code class="language-json">{
+  "first_name": "Robert",
+  "last_name": "Johnson",
+  "company": "Johnson Collectibles",
+  "position_company": "Owner",
+  "email": "robert@johnsoncollectibles.com",
+  "secondary_email": "robert.personal@example.com",
+  "phone": "+1-555-0300",
+  "mobile": "+1-555-0301",
+  "published": 1,
+  "categories": ["Stamps", "Coins"],
+  "interested_in": ["European", "Asian"],
+  "tags": ["VIP", "Consignor"],
+  "tax_type": "business",
+  "tax_id": "12-3456789",
+  "bank_details": [
+    {
+      "name": "Chase Bank",
+      "number": "987654321",
+      "owner": "Robert Johnson",
+      "iban": "GB29 NWBK 6016 1331 9268 19",
+      "bic": "NWBKGB2L"
+    }
+  ],
+  "billing_instructions": "Net 30 payment terms",
+  "shipping_instructions": "Hold all shipments for pickup",
+  "responsible_user": [5, 12],
+  "address": {
+    "country": "US",
+    "thoroughfare": "789 Business Blvd",
+    "locality": "San Francisco",
+    "administrative_area": "CA",
+    "postal_code": "94102",
+    "name_line": "Johnson Collectibles"
+  }
 }</code></pre>
 
       <h5 class="mt-4">Response</h5>
       <pre><code class="language-json">{
   "data": [{
     "id": "456",
+    "uuid": "abc-def-456",
     "first_name": "Jane",
     "last_name": "Smith",
     "email": "jane.smith@example.com",
@@ -148,17 +508,44 @@
       "id": "new",
       "label": "New"
     },
-    "created": "2025-10-30T10:00:00Z"
+    "balance": {
+      "value": 0,
+      "formatted": "$0.00"
+    },
+    "default_address_nid": "789",
+    "created": "2025-10-30T10:00:00Z",
+    "updated": "2025-10-30T10:00:00Z"
   }]
 }</code></pre>
+
+      <h5 class="mt-4">Upsert Behavior</h5>
+      <p>When creating a client with a <code>uuid</code> field:</p>
+      <ul>
+        <li>If a client with that UUID exists, it will be <strong>updated</strong></li>
+        <li>If no client with that UUID exists, a new client will be <strong>created</strong></li>
+        <li>This allows sync operations to safely create or update without checking existence first</li>
+      </ul>
+
+      <h5 class="mt-4">Notes</h5>
+      <ul>
+        <li>Dates are in milliseconds (JavaScript timestamps)</li>
+        <li>Monetary values are in cents (divide by 100 for dollar amounts)</li>
+        <li>Taxonomy terms can be sent as IDs (integers) or labels (strings)</li>
+        <li>The <code>label</code> field is auto-generated and read-only</li>
+        <li>Creating a client with <code>address</code> will automatically create a default address</li>
+        <li>Use separate Client Address endpoint for managing additional addresses</li>
+        <li>Multifield arrays allow multiple entries (e.g., multiple bank accounts)</li>
+        <li>Client access is restricted in token mode - only self-updates allowed</li>
+      </ul>
     </div>
   </div>
 
   <div class="alert alert-info">
     <h5><i class="fas fa-info-circle"></i> Managing Client Addresses</h5>
-    <p>Addresses are managed separately using the <strong>Client Address</strong> endpoint. After creating a client, use the following endpoint to add addresses:</p>
+    <p>While you can set the default address during client creation using the <code>address</code> field, additional addresses should be managed using the <strong>Client Address</strong> endpoint:</p>
     <ul class="mb-0">
       <li><code>POST /api/v1.0/client-address</code> - Create a new address</li>
+      <li><code>PATCH /api/v1.0/client-address/{id}</code> - Update an address</li>
       <li>See <a href="../addresses/list.html">Client Address API</a> for full documentation</li>
     </ul>
   </div>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Item - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="list.html">Items</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item"><a href="list.html">Items</a></li>
+      <li class="breadcrumb-item active">Update Item</li>
+    </ol>
+  </nav>
+
+  <h1>Update Item</h1>
+  <p class="lead">Update an existing auction item. Only include the fields you want to change.</p>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-warning badge-method">PATCH</span>
+      <code class="endpoint">/datatable-items/{id}</code>
+    </div>
+    <div class="card-body">
+      <h5>Writable Fields</h5>
+      <p>All fields that can be set during item creation (POST) can also be updated via PATCH. Only include the fields you want to modify.</p>
+
+      <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle"></i> Item History Fields</h5>
+        <p class="mb-0">When updating Item History fields (e.g., <code>field_sold_for_amount</code>, <code>field_winner_bidder</code>),
+        the system creates or updates Item History records rather than modifying the item directly. PATCH with only Item History fields skips parent class validation.</p>
+      </div>
+
+      <h5 class="mt-4">Example Request - Update Basic Information</h5>
+      <pre><code class="language-bash">PATCH /api/v1.0/datatable-items/5678</code></pre>
+      <pre><code class="language-json">{
+  "subtitle": "Updated: Rare 1920s European Stamp Collection",
+  "published": 1
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Description</h5>
+      <pre><code class="language-json">{
+  "description": "<p>Fully authenticated collection with certificates.</p>",
+  "literature": "Referenced in Stanley Gibbons Catalogue 2025",
+  "provenance": "Ex collection: Royal Philatelic Society"
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Pricing</h5>
+      <pre><code class="language-json">{
+  "opening_price": 75000,
+  "estimate_low": 100000,
+  "estimate_high": 150000,
+  "reserve_price": 90000
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Categories</h5>
+      <pre><code class="language-json">{
+  "categories": ["Stamps", "European", "Vintage"],
+  "search_tags": ["Rare", "Collectible"],
+  "topics": ["Postal History"]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Images</h5>
+      <pre><code class="language-json">{
+  "images": [12345, 12346, 12347, 12348]
+}</code></pre>
+      <p><small class="text-muted">Note: Images field is optimized - won't resave if file IDs are unchanged</small></p>
+
+      <h5 class="mt-4">Example Request - Update Dimensions</h5>
+      <pre><code class="language-json">{
+  "dimensions": [
+    {
+      "number_on_box": "BOX-002",
+      "height": 15.0,
+      "width": 12.0,
+      "depth": 4.0,
+      "weight": 3.5,
+      "type": "boxed"
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Catalogs</h5>
+      <pre><code class="language-json">{
+  "catalogs": [
+    {
+      "catalog_number": "SG-456",
+      "catalog_name": "Stanley Gibbons",
+      "ordering_number": 1,
+      "catalog_value": 18000
+    },
+    {
+      "catalog_number": "M-789",
+      "catalog_name": "Michel Catalogue",
+      "ordering_number": 2,
+      "catalog_value": 17500
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Item History (Sold Information)</h5>
+      <pre><code class="language-json">{
+  "field_sold_for_amount": 125000,
+  "field_winner_bidder": 456,
+  "field_bidder_alias": "Paddle 23",
+  "field_sold_status": "sold",
+  "field_sold_agent": 10
+}</code></pre>
+      <p><small class="text-muted">Note: This creates a new Item History record</small></p>
+
+      <h5 class="mt-4">Example Request - Update Consignor Payment</h5>
+      <pre><code class="language-json">{
+  "field_consignor_price": 100000,
+  "field_dont_pay_consignor": 0
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Withdraw Item</h5>
+      <pre><code class="language-json">{
+  "field_withdrawn": 1,
+  "auctioneer_notes": "Withdrawn at consignor's request"
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Lot Number and Position</h5>
+      <pre><code class="language-json">{
+  "lot_number": 150,
+  "lot_letter": "A",
+  "position_of_consignment": 5
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Media Links</h5>
+      <pre><code class="language-json">{
+  "video_url": "https://youtube.com/watch?v=example",
+  "pdf_url": "https://example.com/catalog.pdf",
+  "certificate_link": "https://example.com/cert/67890"
+}</code></pre>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [{
+    "id": "5678",
+    "display_id": "150A",
+    "subtitle": "Updated: Rare 1920s European Stamp Collection",
+    "published": true,
+    "lot": "150A",
+    "opening_price": 75000,
+    "estimate_low": 100000,
+    "estimate_high": 150000,
+    "current_price": 125000,
+    "status": {
+      "value": "sold",
+      "label": "Sold"
+    },
+    "updated": "2025-12-31T15:30:00Z"
+  }]
+}</code></pre>
+
+      <h5 class="mt-4">Updatable Field Categories</h5>
+      <div class="accordion" id="fieldAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#basicFields">
+              Basic Information
+            </button>
+          </h2>
+          <div id="basicFields" class="accordion-collapse collapse show" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>subtitle</code>, <code>published</code>, <code>type</code>, <code>collectible_type</code>,
+              <code>grade</code>, <code>consignment</code>, <code>uuid</code>, <code>year</code>, <code>country</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descFields">
+              Descriptions & Content
+            </button>
+          </h2>
+          <div id="descFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>description</code>, <code>footer</code>, <code>caption</code>, <code>literature</code>,
+              <code>essay</code>, <code>provenance</code>, <code>ex</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#catFields">
+              Organization & Categorization
+            </button>
+          </h2>
+          <div id="catFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>categories</code>, <code>destinations</code>, <code>search_tags</code>, <code>catalogue_parts</code>,
+              <code>postal_thematics</code>, <code>symbols</code>, <code>sub_symbol</code>, <code>grouping_category</code>,
+              <code>topics</code>, <code>tags</code>, <code>mediums</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#priceFields">
+              Pricing & Bidding
+            </button>
+          </h2>
+          <div id="priceFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>opening_price</code>, <code>minimum_price</code>, <code>buy_now_price</code>, <code>buy_now_setting</code>,
+              <code>estimate_low</code>, <code>estimate_high</code>, <code>estimate_internal</code>, <code>retail_price</code>,
+              <code>reserve_price</code>, <code>reserve_type</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mediaFields">
+              Images & Media
+            </button>
+          </h2>
+          <div id="mediaFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>images</code>, <code>video_url</code>, <code>pdf_url</code>, <code>certificate_link</code>,
+              <code>reference_link</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#techFields">
+              Technical Details
+            </button>
+          </h2>
+          <div id="techFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>catalogs</code> (multifield), <code>dimensions</code> (multifield), <code>product_tax_code</code>,
+              <code>harmonized_code</code>, <code>signed_locations</code>, <code>art_work_type</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#lotFields">
+              Lot & Positioning
+            </button>
+          </h2>
+          <div id="lotFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>lot_number</code>, <code>lot_letter</code>, <code>position_of_consignment</code>,
+              <code>start_lot_numbering_at</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#itemHistoryFields">
+              Item History Fields
+            </button>
+          </h2>
+          <div id="itemHistoryFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>field_consignor_price</code>, <code>field_dont_pay_consignor</code>, <code>field_sold_agent</code>,
+              <code>field_sold_for_amount</code>, <code>field_sold_to_bidder_id</code>, <code>field_bidder_alias</code>,
+              <code>field_sold_status</code>, <code>field_under_extension_status</code>, <code>field_winner_bidder</code>,
+              <code>field_withdrawn</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#otherFields">
+              Additional Information
+            </button>
+          </h2>
+          <div id="otherFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>shipping_id</code>, <code>post_sale</code>, <code>consignor_reference_number</code>,
+              <code>responsible_user</code>, <code>public_message</code>, <code>auctioneer_notes</code>,
+              <code>additional_charges</code>, <code>dont_pay_consignor_note</code>, <code>hide_sold_information</code>,
+              <code>printing_options</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4">Read-Only Fields (Cannot be Updated)</h5>
+      <div class="alert alert-warning">
+        <p class="mb-0">The following fields are read-only and will be ignored if included in PATCH requests:</p>
+        <ul class="mt-2 mb-0">
+          <li><code>id</code>, <code>display_id</code>, <code>lot</code> (formatted)</li>
+          <li><code>current_price</code>, <code>consignor_price</code> (from Item History)</li>
+          <li><code>withdrawn</code>, <code>dont_pay_consignor</code>, <code>winner_bidder</code>, <code>bidder_number</code>, <code>bidder_alias</code> (from IH - use field_* versions to update)</li>
+          <li><code>user_agent</code>, <code>sold_status</code> (from IH - use field_* versions to update)</li>
+          <li><code>current_order</code>, <code>current_consignment_statement</code> (from IH)</li>
+          <li><code>sale</code> (reference from context)</li>
+          <li><code>previous_lot</code>, <code>next_lot</code> (navigation)</li>
+          <li><code>sync_status</code>, <code>itemWebsiteLink</code> (computed)</li>
+          <li><code>created</code>, <code>updated</code> timestamps</li>
+        </ul>
+      </div>
+
+      <h5 class="mt-4">Important Notes</h5>
+      <ul>
+        <li>PATCH requests are partial updates - only send fields you want to change</li>
+        <li>All monetary values are in cents</li>
+        <li>Dates are in milliseconds (JavaScript timestamps)</li>
+        <li>Taxonomy terms can be sent as IDs (integers) or labels (strings)</li>
+        <li><strong>Multifield arrays completely replace existing values</strong> - not merged</li>
+        <li><code>images</code> field is optimized - won't resave if file IDs are unchanged</li>
+        <li><strong>Item History fields</strong> create separate item_history nodes - use <code>field_*</code> prefix for these</li>
+        <li>Latest Item History is promoted and values are fetched from it on GET</li>
+        <li>PATCH with <strong>only</strong> Item History fields skips parent class validation</li>
+        <li><code>position_of_consignment</code> is cast to unsigned integer during query</li>
+        <li>See <a href="create.html">Create Item</a> for detailed field descriptions and structures</li>
+      </ul>
+    </div>
+  </div>
+
+  <a href="list.html" class="btn btn-outline-secondary">Back to Items</a>
+  <a href="create.html" class="btn btn-outline-secondary">View Create Documentation</a>
+  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>

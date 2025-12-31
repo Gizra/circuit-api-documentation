@@ -45,7 +45,7 @@
   </nav>
 
   <h1>Update Client</h1>
-  <p class="lead">Update an existing client record or change client status.</p>
+  <p class="lead">Update an existing client record. Only include the fields you want to change.</p>
 
   <div class="card mb-4">
     <div class="card-header">
@@ -53,21 +53,226 @@
       <code class="endpoint">/datatable-clients/{id}</code>
     </div>
     <div class="card-body">
-      <h5>Example Request - General Update</h5>
-      <pre><code class="language-json">{
-  "status": "approved",
-  "phone": "+1-555-0200",
-  "categories": ["10", "15", "20"]
-}</code></pre>
+      <h5>Writable Fields</h5>
+      <p>All fields that can be set during client creation (POST) can also be updated via PATCH. Only include the fields you want to modify.</p>
 
       <h5 class="mt-4">Example Request - Update Status</h5>
+      <pre><code class="language-bash">PATCH /api/v1.0/datatable-clients/456</code></pre>
       <pre><code class="language-json">{
-  "status": "approved"
+  "published": 1
 }</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Contact Information</h5>
+      <pre><code class="language-json">{
+  "phone": "+1-555-0200",
+  "mobile": "+1-555-0201",
+  "email": "newemail@example.com"
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Categories and Tags</h5>
+      <pre><code class="language-json">{
+  "categories": ["10", "15", "20"],
+  "tags": ["VIP", "Premium"],
+  "interested_in": ["Stamps", "Coins"]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Add Banking Details</h5>
+      <pre><code class="language-json">{
+  "bank_details": [
+    {
+      "name": "Chase Bank",
+      "number": "987654321",
+      "owner": "John Smith",
+      "iban": "GB29 NWBK 6016 1331 9268 19",
+      "bic": "NWBKGB2L"
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Shipping Instructions</h5>
+      <pre><code class="language-json">{
+  "shipping_instructions": "Call before delivery",
+  "temp_shipping_instructions": "Holiday delivery only after 2PM",
+  "temp_si_dates_from": 1735689600000,
+  "temp_si_dates_to": 1738368000000
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Tax Information</h5>
+      <pre><code class="language-json">{
+  "tax_type": "business",
+  "tax_id": "12-3456789",
+  "tax_state": "CA"
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Block Client Communications</h5>
+      <pre><code class="language-json">{
+  "block_emails": 1,
+  "blocking_reason": "Payment disputes - do not contact",
+  "warning": "Customer has outstanding balance"
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Responsible Users</h5>
+      <pre><code class="language-json">{
+  "responsible_user": [5, 12, 18],
+  "agent": 5
+}</code></pre>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [{
+    "id": "456",
+    "uuid": "abc-def-456",
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "email": "newemail@example.com",
+    "phone": "+1-555-0200",
+    "mobile": "+1-555-0201",
+    "published": 1,
+    "status": {
+      "id": "approved",
+      "label": "Approved"
+    },
+    "categories": [
+      { "id": "10", "label": "Stamps" },
+      { "id": "15", "label": "Coins" },
+      { "id": "20", "label": "Postcards" }
+    ],
+    "updated": "2025-12-31T10:00:00Z"
+  }]
+}</code></pre>
+
+      <h5 class="mt-4">Updatable Field Categories</h5>
+      <div class="accordion" id="fieldAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#contactFields">
+              Contact Information
+            </button>
+          </h2>
+          <div id="contactFields" class="accordion-collapse collapse show" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>first_name</code>, <code>last_name</code>, <code>company</code>, <code>position_company</code>,
+              <code>name_prefix</code>, <code>override_salutation</code>, <code>email</code>, <code>secondary_email</code>,
+              <code>phone</code>, <code>primary_phone</code>, <code>office_phone</code>, <code>mobile</code>,
+              <code>fax</code>, <code>birthdate</code>, <code>client_website</code>, <code>website_language</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#addressFields">
+              Address & Location
+            </button>
+          </h2>
+          <div id="addressFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>address</code> (updates default address)
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#statusFields">
+              Status & Organization
+            </button>
+          </h2>
+          <div id="statusFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>published</code>, <code>agent</code>, <code>responsible_user</code>, <code>categories</code>,
+              <code>interested_in</code>, <code>tags</code>, <code>source</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#financialFields">
+              Banking & Financial
+            </button>
+          </h2>
+          <div id="financialFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>bank_details</code>, <code>default_payment_method</code>, <code>invoice_release_limit</code>,
+              <code>consignor_commissions</code>, <code>additional_charges</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#taxFields">
+              Tax Information
+            </button>
+          </h2>
+          <div id="taxFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>tax_type</code>, <code>tax_id</code>, <code>tax_state</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionFields">
+              Instructions & Notes
+            </button>
+          </h2>
+          <div id="instructionFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>billing_instructions</code>, <code>client_billing_instruction</code>,
+              <code>shipping_instructions</code>, <code>shipping_instructions_client</code>,
+              <code>temp_shipping_instructions</code>, <code>temp_si_dates_from</code>, <code>temp_si_dates_to</code>,
+              <code>blocking_reason</code>, <code>warning</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#otherFields">
+              Other Fields
+            </button>
+          </h2>
+          <div id="otherFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>block_emails</code>, <code>subscription_type</code>, <code>expiration_date</code>,
+              <code>philaworksplace_id</code>, <code>external_ids</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4">Read-Only Fields (Cannot be Updated)</h5>
+      <div class="alert alert-warning">
+        <p class="mb-0">The following fields are read-only and will be ignored if included in PATCH requests:</p>
+        <ul class="mt-2 mb-0">
+          <li><code>id</code>, <code>label</code>, <code>uuid</code> (once set)</li>
+          <li><code>balance</code>, <code>customer_available_balance</code> (calculated)</li>
+          <li><code>default_address_rendered</code>, <code>default_address_nid</code></li>
+          <li><code>country</code>, <code>city</code>, <code>state</code>, <code>street</code>, <code>postal_code</code> (from default address)</li>
+          <li><code>status</code>, <code>last_name_company</code> (computed)</li>
+          <li><code>created</code>, <code>updated</code> timestamps</li>
+        </ul>
+      </div>
+
+      <h5 class="mt-4">Notes</h5>
+      <ul>
+        <li>PATCH requests are partial updates - only send fields you want to change</li>
+        <li>Dates are in milliseconds (JavaScript timestamps)</li>
+        <li>Monetary values are in cents</li>
+        <li>Taxonomy terms can be sent as IDs (integers) or labels (strings)</li>
+        <li>Multifield arrays completely replace existing values (not merged)</li>
+        <li>Updating <code>address</code> modifies the default address, not client fields</li>
+        <li>Client access is restricted in token mode - only self-updates allowed</li>
+        <li>See <a href="create.html">Create Client</a> for detailed field descriptions and structures</li>
+      </ul>
     </div>
   </div>
 
   <a href="list.html" class="btn btn-outline-secondary">Back to Clients</a>
+  <a href="create.html" class="btn btn-outline-secondary">View Create Documentation</a>
   <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
 </div>
 

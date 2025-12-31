@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Read(//home/bl/htdocs/circuitauction-backoffice/server/backoffice/modules/custom/server_restful/plugins/restful/**)"
+      "Read(//home/bl/htdocs/circuitauction-backoffice/server/backoffice/modules/custom/server_restful/plugins/restful/**)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

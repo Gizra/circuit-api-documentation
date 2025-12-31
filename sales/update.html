@@ -40,12 +40,12 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="../index.html">API</a></li>
       <li class="breadcrumb-item"><a href="list.html">Sales</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Update Sale</li>
+      <li class="breadcrumb-item active">Update Sale</li>
     </ol>
   </nav>
 
   <h1>Update Sale</h1>
-  <p class="lead">Update an existing sale/auction.</p>
+  <p class="lead">Update an existing auction/sale event. Only include the fields you want to change.</p>
 
   <div class="card mb-4">
     <div class="card-header">
@@ -53,69 +53,225 @@
       <code class="endpoint">/datatable-sales/{id}</code>
     </div>
     <div class="card-body">
-      <h5>Path Parameters</h5>
-      <div class="table-responsive">
-        <table class="table table-sm param-table">
-          <thead>
-          <tr>
-            <th>Parameter</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td><code>id</code></td>
-            <td>string</td>
-            <td>Sale ID</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+      <h5>Writable Fields</h5>
+      <p>All fields that can be set during sale creation (POST) can also be updated via PATCH. Only include the fields you want to modify.</p>
 
-      <h5 class="mt-4">Request Body Fields</h5>
-      <div class="table-responsive">
-        <table class="table table-sm param-table">
-          <thead>
-          <tr>
-            <th>Field</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td><code>lots_locked</code></td>
-            <td>boolean</td>
-            <td>Lock lot numbers to prevent changes</td>
-          </tr>
-          <tr>
-            <td><code>status</code></td>
-            <td>string</td>
-            <td>Sale status (draft, published, closed)</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+      <h5 class="mt-4">Example Request - Update Basic Information</h5>
+      <pre><code class="language-bash">PATCH /api/v1.0/datatable-sales/888</code></pre>
+      <pre><code class="language-json">{
+  "subtitle": "Updated: Spring Rare Stamps Auction 2025",
+  "published": 1
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Dates</h5>
+      <pre><code class="language-json">{
+  "mail_sale_date_from": 1711929600000,
+  "mail_sale_date_to": 1712707200000,
+  "live_sale_date_from": 1712707200000,
+  "live_sale_date_to": 1712793600000
+}</code></pre>
+      <p><small class="text-muted">Note: Dates are in milliseconds (JavaScript timestamps)</small></p>
+
+      <h5 class="mt-4">Example Request - Update Financial Settings</h5>
+      <pre><code class="language-json">{
+  "buyers_premium": "22% up to $10,000, 18% thereafter",
+  "post_sale_discount": 7.5
+}</code></pre>
 
       <h5 class="mt-4">Example Request - Lock Lots</h5>
-      <pre><code class="language-bash">PATCH /api/v1.0/datatable-sales/456</code></pre>
       <pre><code class="language-json">{
-  "lots_locked": true
+  "lots_locked": 1
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Configuration</h5>
+      <pre><code class="language-json">{
+  "sync_active": 1,
+  "display_live_links": 1,
+  "hide_sold_information": 0,
+  "hide_sale": 0
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Media Links</h5>
+      <pre><code class="language-json">{
+  "pdf_link": "https://example.com/updated-catalog.pdf",
+  "pdf_sale_result": "https://example.com/results.pdf",
+  "e_book_link": "https://example.com/ebook-catalog"
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Departments</h5>
+      <pre><code class="language-json">{
+  "departments": ["Stamps", "Postal History", "Covers"]
+}</code></pre>
+      <p><small class="text-muted">Note: Arrays completely replace existing values</small></p>
+
+      <h5 class="mt-4">Example Request - Update Additional Charges</h5>
+      <pre><code class="language-json">{
+  "additional_charges": [
+    {
+      "amount": 60.00,
+      "term": 10,
+      "description": "Updated catalog subscription",
+      "attached_to": "sale",
+      "tax": 12.00
+    },
+    {
+      "amount": 35.00,
+      "term": 15,
+      "description": "Digital access fee",
+      "attached_to": "sale",
+      "tax": 7.00
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Update Display Information</h5>
+      <pre><code class="language-json">{
+  "date_and_location_string": "May 10-11, 2025 | Grand Auction Hall, London",
+  "next_consignment_notice": "Now accepting consignments for Summer 2025",
+  "auctioneer_name": "Updated Auctioneer Name"
 }</code></pre>
 
       <h5 class="mt-4">Response</h5>
       <pre><code class="language-json">{
   "data": [{
-    "id": "456",
-    "lots_locked": true,
-    "updated": "2025-10-30T10:00:00Z"
+    "id": "888",
+    "uuid": "xyz-abc-888",
+    "subtitle": "Updated: Spring Rare Stamps Auction 2025",
+    "published": true,
+    "status": {
+      "value": "upcoming",
+      "label": "Upcoming"
+    },
+    "sale_number": "SALE-2025-001",
+    "buyers_premium": "22% up to $10,000, 18% thereafter",
+    "post_sale_discount": 7.5,
+    "lots_locked": 1,
+    "updated": "2025-12-31T15:30:00Z"
   }]
 }</code></pre>
+
+      <h5 class="mt-4">Updatable Field Categories</h5>
+      <div class="accordion" id="fieldAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#basicFields">
+              Basic Information
+            </button>
+          </h2>
+          <div id="basicFields" class="accordion-collapse collapse show" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>published</code>, <code>description</code>, <code>subtitle</code>, <code>sale_type</code>,
+              <code>sale_number</code>, <code>auctioneer_name</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dateFields">
+              Date Fields
+            </button>
+          </h2>
+          <div id="dateFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>mail_sale_date_from</code>, <code>mail_sale_date_to</code>, <code>live_sale_date_from</code>,
+              <code>live_sale_date_to</code>, <code>last_date_for_consignment</code>, <code>auto_sync_image_end_date</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#financialFields">
+              Financial Configuration
+            </button>
+          </h2>
+          <div id="financialFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>buyers_premium</code>, <code>post_sale_discount</code>, <code>initial_finder_fees_orders</code>,
+              <code>additional_charges</code> (multifield), <code>bid_steps</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#settingsFields">
+              Settings & Configuration
+            </button>
+          </h2>
+          <div id="settingsFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>lots_locked</code>, <code>next_consignment_notice</code>, <code>date_and_location_string</code>,
+              <code>item_images_dir</code>, <code>sync_active</code>, <code>display_live_links</code>,
+              <code>hide_sold_information</code>, <code>hide_sale</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mediaFields">
+              Media & Documents
+            </button>
+          </h2>
+          <div id="mediaFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>pdf_link</code>, <code>pdf_sale_result</code>, <code>e_book_link</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#orgFields">
+              Organization
+            </button>
+          </h2>
+          <div id="orgFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+            <div class="accordion-body">
+              <code>departments</code>, <code>external_ids</code> (multifield)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4">Read-Only Fields (Cannot be Updated)</h5>
+      <div class="alert alert-warning">
+        <p class="mb-0">The following fields are read-only and will be ignored if included in PATCH requests:</p>
+        <ul class="mt-2 mb-0">
+          <li><code>id</code>, <code>label</code>, <code>uuid</code></li>
+          <li><code>status</code> (computed)</li>
+          <li><code>logo</code> (read-only file)</li>
+          <li><code>image_stats</code> (computed)</li>
+          <li><code>sale_url</code>, <code>saleWebsiteLink</code> (generated)</li>
+          <li><code>migrate_item_info</code>, <code>migrate_delcampe_info</code>, <code>migrate_san_info</code> (computed)</li>
+          <li><code>created</code>, <code>updated</code> timestamps</li>
+        </ul>
+      </div>
+
+      <h5 class="mt-4">Important Notes</h5>
+      <ul>
+        <li>PATCH requests are partial updates - only send fields you want to change</li>
+        <li>All dates are in milliseconds (JavaScript timestamps)</li>
+        <li>Server converts milliseconds to Unix timestamps (seconds)</li>
+        <li>Date range fields split into <code>_from</code> and <code>_to</code> variants</li>
+        <li>Monetary values in cents</li>
+        <li>Taxonomy terms (departments) can be sent as IDs or labels</li>
+        <li><strong>Multifield arrays completely replace existing values</strong> - not merged</li>
+        <li>Client access is restricted in token mode (view-only)</li>
+        <li><code>lots_locked</code> prevents editing of lots in the sale</li>
+        <li><code>sync_active</code> controls automatic synchronization</li>
+        <li><code>hide_sale</code> hides entire sale from public view</li>
+        <li><code>hide_sold_information</code> hides only sold prices/buyers</li>
+        <li>See <a href="create.html">Create Sale</a> for detailed field descriptions and structures</li>
+      </ul>
     </div>
   </div>
 
-  <a href="list.html" class="btn btn-outline-secondary">Back to Sales List</a>
+  <a href="list.html" class="btn btn-outline-secondary">Back to Sales</a>
+  <a href="create.html" class="btn btn-outline-secondary">View Create Documentation</a>
+  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

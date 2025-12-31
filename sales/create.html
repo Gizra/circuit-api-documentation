@@ -6,6 +6,7 @@
   <title>Create Sale - Circuit Auction API</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
       body { padding-top: 70px; background-color: #f8f9fa; }
       .navbar-brand { font-weight: bold; }
@@ -45,7 +46,7 @@
   </nav>
 
   <h1>Create Sale</h1>
-  <p class="lead">Create a new sale/auction.</p>
+  <p class="lead">Create a new auction/sale event with dates, pricing structure, and configuration.</p>
 
   <div class="card mb-4">
     <div class="card-header">
@@ -53,7 +54,7 @@
       <code class="endpoint">/datatable-sales</code>
     </div>
     <div class="card-body">
-      <h5>Request Body Fields</h5>
+      <h5>Basic Information</h5>
       <div class="table-responsive">
         <table class="table table-sm param-table">
           <thead>
@@ -66,63 +67,374 @@
           </thead>
           <tbody>
           <tr>
-            <td><code>label</code></td>
-            <td>string</td>
-            <td>Yes</td>
-            <td>Sale name/title</td>
+            <td><code>published</code></td>
+            <td>boolean</td>
+            <td>No</td>
+            <td>Publication status (0 or 1)</td>
           </tr>
           <tr>
-            <td><code>sale_date</code></td>
-            <td>string</td>
-            <td>Yes</td>
-            <td>Sale date (ISO 8601 format)</td>
-          </tr>
-          <tr>
-            <td><code>status</code></td>
+            <td><code>description</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Sale status (draft, published, closed)</td>
+            <td>Sale description (HTML)</td>
           </tr>
           <tr>
-            <td><code>catalog</code></td>
+            <td><code>subtitle</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Catalog ID</td>
+            <td>Sale subtitle</td>
           </tr>
           <tr>
-            <td><code>venue</code></td>
+            <td><code>sale_type</code></td>
             <td>string</td>
             <td>No</td>
-            <td>Venue location</td>
+            <td>Type of sale (live, online, hybrid)</td>
+          </tr>
+          <tr>
+            <td><code>sale_number</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Sale reference number</td>
+          </tr>
+          <tr>
+            <td><code>auctioneer_name</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Name of auctioneer</td>
           </tr>
           </tbody>
         </table>
       </div>
 
-      <h5 class="mt-4">Example Request</h5>
+      <h5 class="mt-4">Date Fields</h5>
+      <div class="alert alert-info">
+        <p class="mb-0"><strong>Note:</strong> Date range fields are split into <code>_from</code> and <code>_to</code> variants. Send dates as milliseconds (JavaScript timestamps).</p>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>mail_sale_date_from</code></td>
+            <td>integer</td>
+            <td>Mail sale start date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>mail_sale_date_to</code></td>
+            <td>integer</td>
+            <td>Mail sale end date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>live_sale_date_from</code></td>
+            <td>integer</td>
+            <td>Live sale start date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>live_sale_date_to</code></td>
+            <td>integer</td>
+            <td>Live sale end date (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>last_date_for_consignment</code></td>
+            <td>integer</td>
+            <td>Last date to accept consignments (milliseconds)</td>
+          </tr>
+          <tr>
+            <td><code>auto_sync_image_end_date</code></td>
+            <td>integer</td>
+            <td>Auto sync image cutoff date (milliseconds)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Financial Configuration</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>buyers_premium</code></td>
+            <td>string</td>
+            <td>Buyer's premium percentage or structure</td>
+          </tr>
+          <tr>
+            <td><code>post_sale_discount</code></td>
+            <td>float</td>
+            <td>Post-sale discount percentage</td>
+          </tr>
+          <tr>
+            <td><code>initial_finder_fees_orders</code></td>
+            <td>string</td>
+            <td>Initial finder fees orders configuration</td>
+          </tr>
+          <tr>
+            <td><code>additional_charges</code></td>
+            <td>array</td>
+            <td>Array of additional charge objects (multifield). See structure below.</td>
+          </tr>
+          <tr>
+            <td><code>bid_steps</code></td>
+            <td>string</td>
+            <td>Bid step increments configuration</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Settings & Configuration</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>lots_locked</code></td>
+            <td>boolean</td>
+            <td>Lock lots from editing (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>next_consignment_notice</code></td>
+            <td>string</td>
+            <td>Notice for next consignment</td>
+          </tr>
+          <tr>
+            <td><code>date_and_location_string</code></td>
+            <td>string</td>
+            <td>Formatted date and location display string</td>
+          </tr>
+          <tr>
+            <td><code>item_images_dir</code></td>
+            <td>string</td>
+            <td>Item images directory path</td>
+          </tr>
+          <tr>
+            <td><code>sync_active</code></td>
+            <td>boolean</td>
+            <td>Enable synchronization (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>display_live_links</code></td>
+            <td>boolean</td>
+            <td>Display live bidding links (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>hide_sold_information</code></td>
+            <td>boolean</td>
+            <td>Hide sold information from public (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>hide_sale</code></td>
+            <td>boolean</td>
+            <td>Hide sale from public view (0 or 1)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Media & Documents</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>pdf_link</code></td>
+            <td>string</td>
+            <td>PDF catalog link</td>
+          </tr>
+          <tr>
+            <td><code>pdf_sale_result</code></td>
+            <td>string</td>
+            <td>PDF sale results link</td>
+          </tr>
+          <tr>
+            <td><code>e_book_link</code></td>
+            <td>string</td>
+            <td>E-book catalog link</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Organization</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>departments</code></td>
+            <td>array</td>
+            <td>Array of department term IDs or labels</td>
+          </tr>
+          <tr>
+            <td><code>external_ids</code></td>
+            <td>array</td>
+            <td>Array of external ID objects (multifield)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Additional Charges Structure (Multifield)</h5>
+      <pre><code class="language-json">{
+  "additional_charges": [
+    {
+      "amount": 25.00,
+      "term": 5,
+      "description": "Catalog subscription fee",
+      "attached_to": "sale",
+      "tax": 5.00
+    }
+  ]
+}</code></pre>
+      <p><small><strong>Additional Charge Fields:</strong></small></p>
+      <ul class="small">
+        <li><code>amount</code> (float): Charge amount</li>
+        <li><code>term</code> (integer): Charge type term ID</li>
+        <li><code>description</code> (string): Charge description</li>
+        <li><code>attached_to</code> (string): What the charge is attached to</li>
+        <li><code>tax</code> (float): Tax amount</li>
+      </ul>
+
+      <h5 class="mt-4">Example Request - Basic Sale</h5>
       <pre><code class="language-bash">POST /api/v1.0/datatable-sales</code></pre>
       <pre><code class="language-json">{
-  "label": "Fall Auction 2025",
-  "sale_date": "2025-11-15T19:00:00Z",
-  "status": "draft",
-  "catalog": "79",
-  "venue": "Main Auction House"
+  "published": 1,
+  "subtitle": "Spring Rare Stamps Auction",
+  "sale_type": "hybrid",
+  "sale_number": "SALE-2025-001",
+  "auctioneer_name": "John Auctioneer",
+  "mail_sale_date_from": 1711929600000,
+  "mail_sale_date_to": 1712534400000,
+  "live_sale_date_from": 1712534400000,
+  "live_sale_date_to": 1712620800000,
+  "buyers_premium": "20%",
+  "lots_locked": 0
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Complete Sale Configuration</h5>
+      <pre><code class="language-json">{
+  "published": 1,
+  "description": "<p>Premier auction featuring exceptional philatelic rarities.</p>",
+  "subtitle": "World Classics & Modern Rarities",
+  "sale_type": "hybrid",
+  "sale_number": "SALE-2025-002",
+  "auctioneer_name": "Sarah Smith",
+  "mail_sale_date_from": 1714348800000,
+  "mail_sale_date_to": 1715558400000,
+  "live_sale_date_from": 1715558400000,
+  "live_sale_date_to": 1715644800000,
+  "last_date_for_consignment": 1710979200000,
+  "buyers_premium": "20% up to $5000, 15% thereafter",
+  "post_sale_discount": 5.0,
+  "lots_locked": 0,
+  "next_consignment_notice": "Now accepting consignments for Fall 2025 auction",
+  "date_and_location_string": "April 15-16, 2025 | New York Auction House",
+  "sync_active": 1,
+  "display_live_links": 1,
+  "hide_sold_information": 0,
+  "hide_sale": 0,
+  "pdf_link": "https://example.com/catalogs/sale-2025-002.pdf",
+  "e_book_link": "https://example.com/ebooks/sale-2025-002",
+  "departments": ["Stamps", "Postal History"],
+  "additional_charges": [
+    {
+      "amount": 50.00,
+      "term": 10,
+      "description": "Premium catalog subscription",
+      "attached_to": "sale",
+      "tax": 10.00
+    }
+  ],
+  "bid_steps": "Standard",
+  "auto_sync_image_end_date": 1714262400000
 }</code></pre>
 
       <h5 class="mt-4">Response</h5>
       <pre><code class="language-json">{
   "data": [{
-    "id": "457",
-    "label": "Fall Auction 2025",
-    "sale_date": "2025-11-15T19:00:00Z",
-    "status": "draft",
-    "created": "2025-10-30T10:00:00Z"
+    "id": "888",
+    "uuid": "xyz-abc-888",
+    "subtitle": "Spring Rare Stamps Auction",
+    "published": true,
+    "status": {
+      "value": "upcoming",
+      "label": "Upcoming"
+    },
+    "sale_number": "SALE-2025-001",
+    "sale_type": "hybrid",
+    "mail_sale_date_from": 1711929600000,
+    "mail_sale_date_to": 1712534400000,
+    "live_sale_date_from": 1712534400000,
+    "live_sale_date_to": 1712620800000,
+    "buyers_premium": "20%",
+    "created": "2025-12-31T10:00:00Z",
+    "updated": "2025-12-31T10:00:00Z"
   }]
 }</code></pre>
+
+      <h5 class="mt-4">Notes</h5>
+      <ul>
+        <li>All dates are in milliseconds (JavaScript timestamps)</li>
+        <li>Server converts milliseconds to Unix timestamps (seconds)</li>
+        <li>Date range fields split into <code>_from</code> and <code>_to</code> variants</li>
+        <li>Monetary values in cents</li>
+        <li>Taxonomy terms (departments) can be sent as IDs or labels</li>
+        <li>Multifield arrays allow multiple entries</li>
+        <li>Buyer's premium can be a simple percentage or tiered structure</li>
+        <li>Client access is restricted in token mode (view-only)</li>
+        <li><code>lots_locked</code> prevents editing of lots in the sale</li>
+        <li><code>sync_active</code> enables automatic synchronization</li>
+        <li><code>hide_sale</code> hides entire sale from public view</li>
+        <li><code>hide_sold_information</code> hides only sold prices/buyers</li>
+      </ul>
     </div>
   </div>
 
-  <a href="list.html" class="btn btn-outline-secondary">Back to Sales List</a>
+  <div class="alert alert-warning">
+    <h5><i class="fas fa-exclamation-triangle"></i> Read-Only Fields</h5>
+    <p class="mb-0">The following fields are calculated and cannot be set during creation:</p>
+    <ul class="mt-2 mb-0">
+      <li><code>id</code>, <code>label</code>, <code>uuid</code></li>
+      <li><code>status</code> (computed)</li>
+      <li><code>logo</code> (read-only file)</li>
+      <li><code>image_stats</code> (computed)</li>
+      <li><code>sale_url</code>, <code>saleWebsiteLink</code> (generated)</li>
+      <li><code>migrate_item_info</code>, <code>migrate_delcampe_info</code>, <code>migrate_san_info</code> (computed)</li>
+    </ul>
+  </div>
+
+  <a href="list.html" class="btn btn-outline-secondary">Back to Sales</a>
+  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

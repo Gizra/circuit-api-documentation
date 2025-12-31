@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Consignment - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="list.html">Consignments</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item"><a href="list.html">Consignments</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Create Consignment</li>
+    </ol>
+  </nav>
+
+  <h1>Create Consignment</h1>
+  <p class="lead">Create a new consignment with consignor information, commission structure, shipping methods, and additional charges.</p>
+
+  <div class="alert alert-info">
+    <h5><i class="fas fa-info-circle"></i> Sale Context Required</h5>
+    <p class="mb-0">Consignments require a sale context. Include <code>sale_id</code> parameter in the query string or ensure the sale context is set in your session.</p>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-primary badge-method">POST</span>
+      <code class="endpoint">/datatable-consignments?sale_id={sale_id}</code>
+    </div>
+    <div class="card-body">
+      <h5>Basic Information</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>label</code></td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>Consignment title/name</td>
+          </tr>
+          <tr>
+            <td><code>consignment_id</code></td>
+            <td>string</td>
+            <td>No</td>
+            <td>Unique consignment identifier (e.g., "CON-2025-001")</td>
+          </tr>
+          <tr>
+            <td><code>owner</code></td>
+            <td>integer</td>
+            <td>Yes</td>
+            <td>Consignor client ID (references datatable-clients)</td>
+          </tr>
+          <tr>
+            <td><code>published</code></td>
+            <td>boolean</td>
+            <td>No</td>
+            <td>Publication status (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>promoted</code></td>
+            <td>boolean</td>
+            <td>No</td>
+            <td>Promoted to front page (0 or 1)</td>
+          </tr>
+          <tr>
+            <td><code>responsible_user</code></td>
+            <td>array</td>
+            <td>No</td>
+            <td>Array of responsible user IDs</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Financial Information</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>estimated</code></td>
+            <td>integer</td>
+            <td>Estimated value (in cents)</td>
+          </tr>
+          <tr>
+            <td><code>insurance_value</code></td>
+            <td>integer</td>
+            <td>Insurance value (in cents)</td>
+          </tr>
+          <tr>
+            <td><code>insurance_type</code></td>
+            <td>string</td>
+            <td>Type of insurance coverage</td>
+          </tr>
+          <tr>
+            <td><code>underbid</code></td>
+            <td>float</td>
+            <td>Underbid multiplier (e.g., 0.8 for 80%)</td>
+          </tr>
+          <tr>
+            <td><code>payment_instructions</code></td>
+            <td>string</td>
+            <td>Payment instructions for consignor</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Commission Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>consignor_commission_step_type</code></td>
+            <td>string</td>
+            <td>Commission calculation type (percentage, fixed, etc.)</td>
+          </tr>
+          <tr>
+            <td><code>consignor_commission_steps</code></td>
+            <td>array</td>
+            <td>Array of commission tier objects (multifield). See structure below.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Shipping Information</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>shipping_methods</code></td>
+            <td>array</td>
+            <td>Array of shipping method objects (multifield). See structure below.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Additional Charges & Fees</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>additional_charges</code></td>
+            <td>array</td>
+            <td>Array of additional charge objects (multifield). See structure below.</td>
+          </tr>
+          <tr>
+            <td><code>finder_fees</code></td>
+            <td>array</td>
+            <td>Array of finder fee objects (multifield). See structure below.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Tax & Processing</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>tax_type</code></td>
+            <td>string</td>
+            <td>Tax calculation type</td>
+          </tr>
+          <tr>
+            <td><code>no_post_sale</code></td>
+            <td>boolean</td>
+            <td>Exclude from post-sale processing (0 or 1)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Commission Steps Structure (Multifield)</h5>
+      <pre><code class="language-json">{
+  "consignor_commission_steps": [
+    {
+      "step_from": 0,
+      "consignor_commission": "15%"
+    },
+    {
+      "step_from": 10000,
+      "consignor_commission": "12%"
+    },
+    {
+      "step_from": 50000,
+      "consignor_commission": "10%"
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Shipping Methods Structure (Multifield)</h5>
+      <pre><code class="language-json">{
+  "shipping_methods": [
+    {
+      "shipping_id": 1,
+      "amount": 125.50,
+      "tax_customs_number": 789,
+      "tax_customs_type": "export",
+      "date": 1695945600000,
+      "type": "incoming",
+      "method_type": 2,
+      "customs_tracking_number": "1Z999AA10123456784",
+      "shipping_notes": "Fragile - Handle with care",
+      "description": "Incoming shipment from consignor"
+    }
+  ]
+}</code></pre>
+      <p><small><strong>Shipping Method Fields:</strong></small></p>
+      <ul class="small">
+        <li><code>shipping_id</code> (integer): Custom shipping ID</li>
+        <li><code>amount</code> (float): Shipping amount</li>
+        <li><code>tax_customs_number</code> (integer): Tax/customs reference number</li>
+        <li><code>tax_customs_type</code> (string): Type of customs (import, export, etc.)</li>
+        <li><code>date</code> (integer): Shipping date (milliseconds)</li>
+        <li><code>type</code> (string): Shipping type (incoming, outgoing)</li>
+        <li><code>method_type</code> (integer): Shipping method term ID (FedEx, UPS, etc.)</li>
+        <li><code>customs_tracking_number</code> (string): Tracking number</li>
+        <li><code>shipping_notes</code> (string): Internal notes</li>
+        <li><code>description</code> (string): Shipment description</li>
+      </ul>
+
+      <h5 class="mt-4">Additional Charges Structure (Multifield)</h5>
+      <pre><code class="language-json">{
+  "additional_charges": [
+    {
+      "amount": 50.00,
+      "term": 5,
+      "description": "Professional catalog photography",
+      "attached_to": "consignment",
+      "tax": 10.00
+    }
+  ]
+}</code></pre>
+      <p><small><strong>Additional Charge Fields:</strong></small></p>
+      <ul class="small">
+        <li><code>amount</code> (float): Charge amount</li>
+        <li><code>term</code> (integer): Charge type term ID (Photography, Insurance, etc.)</li>
+        <li><code>description</code> (string): Charge description</li>
+        <li><code>attached_to</code> (string): What the charge is attached to</li>
+        <li><code>tax</code> (float): Tax amount</li>
+      </ul>
+
+      <h5 class="mt-4">Finder Fees Structure (Multifield)</h5>
+      <pre><code class="language-json">{
+  "finder_fees": [
+    {
+      "commission": "5%",
+      "finder": 111,
+      "item": 222
+    }
+  ]
+}</code></pre>
+      <p><small><strong>Finder Fee Fields:</strong></small></p>
+      <ul class="small">
+        <li><code>commission</code> (string): Commission percentage or amount</li>
+        <li><code>finder</code> (integer): Finder client node ID</li>
+        <li><code>item</code> (integer): Item node ID this fee applies to</li>
+      </ul>
+
+      <h5 class="mt-4">Example Request - Basic Consignment</h5>
+      <pre><code class="language-bash">POST /api/v1.0/datatable-consignments?sale_id=123</code></pre>
+      <pre><code class="language-json">{
+  "label": "Estate Jewelry Collection",
+  "consignment_id": "CON-2025-001",
+  "owner": 456,
+  "published": 1,
+  "estimated": 500000,
+  "insurance_value": 750000,
+  "insurance_type": "full",
+  "tax_type": "standard",
+  "consignor_commission_step_type": "percentage",
+  "consignor_commission_steps": [
+    {
+      "step_from": 0,
+      "consignor_commission": "15%"
+    },
+    {
+      "step_from": 10000,
+      "consignor_commission": "12%"
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Example Request - Complete Consignment with Shipping</h5>
+      <pre><code class="language-bash">POST /api/v1.0/datatable-consignments?sale_id=123</code></pre>
+      <pre><code class="language-json">{
+  "label": "Rare Stamp Collection",
+  "consignment_id": "CON-2025-002",
+  "owner": 789,
+  "published": 1,
+  "promoted": 0,
+  "estimated": 1000000,
+  "insurance_value": 1500000,
+  "insurance_type": "comprehensive",
+  "underbid": 0.8,
+  "tax_type": "vat",
+  "payment_instructions": "Wire transfer to account ending in 1234",
+  "no_post_sale": 0,
+  "responsible_user": [10, 15],
+  "consignor_commission_step_type": "tiered",
+  "consignor_commission_steps": [
+    {
+      "step_from": 0,
+      "consignor_commission": "15%"
+    },
+    {
+      "step_from": 50000,
+      "consignor_commission": "10%"
+    }
+  ],
+  "shipping_methods": [
+    {
+      "shipping_id": 1,
+      "amount": 250.00,
+      "tax_customs_number": 12345,
+      "tax_customs_type": "import",
+      "date": 1695945600000,
+      "type": "incoming",
+      "method_type": 2,
+      "customs_tracking_number": "1Z999AA10123456784",
+      "shipping_notes": "Insured shipment - signature required",
+      "description": "Initial consignment delivery"
+    }
+  ],
+  "additional_charges": [
+    {
+      "amount": 150.00,
+      "term": 5,
+      "description": "Professional photography and cataloging",
+      "attached_to": "consignment",
+      "tax": 30.00
+    },
+    {
+      "amount": 75.00,
+      "term": 8,
+      "description": "Expert authentication",
+      "attached_to": "consignment",
+      "tax": 15.00
+    }
+  ],
+  "finder_fees": [
+    {
+      "commission": "3%",
+      "finder": 555,
+      "item": 888
+    }
+  ]
+}</code></pre>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [{
+    "id": "999",
+    "consignment_id": "CON-2025-001",
+    "label": "Estate Jewelry Collection",
+    "published": true,
+    "promoted": false,
+    "status": {
+      "value": "active",
+      "label": "Active"
+    },
+    "owner": {
+      "id": "456",
+      "label": "John Smith",
+      "self": "https://backoffice.ddev.site/api/v1.0/datatable-clients/456"
+    },
+    "estimated": 500000,
+    "insurance_value": 750000,
+    "insurance_type": "full",
+    "tax_type": "standard",
+    "consignor_commission_step_type": "percentage",
+    "consignor_commission_steps": [
+      {
+        "step_from": 0,
+        "consignor_commission": "15%"
+      },
+      {
+        "step_from": 10000,
+        "consignor_commission": "12%"
+      }
+    ],
+    "created": "2025-12-31T10:00:00Z",
+    "updated": "2025-12-31T10:00:00Z"
+  }]
+}</code></pre>
+
+      <h5 class="mt-4">Notes</h5>
+      <ul>
+        <li>Consignments require a <code>sale_id</code> parameter (sale context)</li>
+        <li>All monetary values are in cents (divide by 100 for dollar amounts)</li>
+        <li>Dates are in milliseconds (JavaScript timestamps)</li>
+        <li>Commission percentages are strings with % symbol</li>
+        <li>The <code>owner</code> field must reference a valid client from datatable-clients</li>
+        <li>Multifield arrays allow multiple entries for complex data structures</li>
+        <li>Shipping methods track both incoming and outgoing shipments with customs information</li>
+        <li>Additional charges can be attached to consignments or individual items</li>
+        <li>Finder fees track commissions paid to third-party finders for specific items</li>
+        <li>House consignments are system-managed and have special handling</li>
+        <li>Client access is restricted in token mode</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-warning">
+    <h5><i class="fas fa-exclamation-triangle"></i> Read-Only Fields</h5>
+    <p class="mb-0">The following fields are calculated and cannot be set during creation:</p>
+    <ul class="mt-2 mb-0">
+      <li><code>id</code>, <code>status</code> (computed), <code>house_consignment</code> (calculated)</li>
+      <li><code>current_custom_shipping_id</code>, <code>tax_customs_number</code> (derived)</li>
+      <li><code>closed_statements</code>, <code>statements</code>, <code>workflow</code> (computed)</li>
+      <li><code>sale</code>, <code>customer_number</code> (inherited from context/owner)</li>
+      <li><code>files</code> (managed separately)</li>
+    </ul>
+  </div>
+
+  <a href="list.html" class="btn btn-outline-secondary">Back to Consignments</a>
+  <a href="../index.html" class="btn btn-outline-secondary">Back to API Home</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
