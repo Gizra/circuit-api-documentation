@@ -61,6 +61,7 @@
         </li>
         <li class="nav-item"><a class="nav-link" href="sales/list.html">Sales</a></li>
         <li class="nav-item"><a class="nav-link" href="transactions/list.html">Transactions</a></li>
+        <li class="nav-item"><a class="nav-link" href="notes/list.html">Notes</a></li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             More
@@ -145,6 +146,8 @@
           <a class="nav-link ps-4" href="transactions/list.html">List Transactions</a>
           <a class="nav-link ps-4" href="transactions/create.html">Create Transaction</a>
         </div>
+
+        <a class="nav-link" href="notes/list.html">Notes</a>
 
         <a class="nav-link collapsed" data-bs-toggle="collapse" href="#other-collapse">Other Endpoints</a>
         <div class="collapse" id="other-collapse">
@@ -296,6 +299,15 @@ Authorization: Bearer abc123def456ghi789jkl012mno345pqr678stu901vwx234yz</code><
         <div class="col-md-6 mb-4">
           <div class="card h-100">
             <div class="card-body">
+              <h5 class="card-title">Notes</h5>
+              <p class="card-text">Manage notes and comments attached to items, sales, orders, and clients with document support.</p>
+              <a href="notes/list.html" class="btn btn-primary">View Notes API</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
               <h5 class="card-title">Files & Queue</h5>
               <p class="card-text">Handle file uploads, queue monitoring, and bulk operations.</p>
               <a href="files/get.html" class="btn btn-primary">View Files API</a>
@@ -424,6 +436,15 @@ Authorization: Bearer abc123def456ghi789jkl012mno345pqr678stu901vwx234yz</code><
                 <i class="fas fa-credit-card fa-2x text-info mb-2"></i>
                 <h6>Transactions</h6>
                 <small class="text-muted">2 endpoints</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <i class="fas fa-sticky-note fa-2x text-warning mb-2"></i>
+                <h6>Notes</h6>
+                <small class="text-muted">1 endpoint</small>
               </div>
             </div>
           </div>
