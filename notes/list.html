@@ -72,12 +72,6 @@
             <td><code>?filter[reference]=1890911</code></td>
           </tr>
           <tr>
-            <td><code>sale_id</code></td>
-            <td>string</td>
-            <td>Filter notes by sale ID</td>
-            <td><code>?sale_id=1890911</code></td>
-          </tr>
-          <tr>
             <td><code>sort</code></td>
             <td>string</td>
             <td>Sort order (prefix with - for descending)</td>
@@ -100,7 +94,7 @@
       </div>
 
       <h5 class="mt-4">Example Request</h5>
-      <pre><code class="language-bash">GET /api/v1.0/notes?filter[reference]=1890911&amp;sale_id=1890911&amp;sort=-created</code></pre>
+      <pre><code class="language-bash">GET /api/v1.0/notes?filter[reference]=1890911&amp;sort=-created</code></pre>
 
       <h5 class="mt-4">Response</h5>
       <pre><code class="language-json">{
@@ -288,7 +282,6 @@
         <ul class="mb-0">
           <li>Notes can be attached to various entity types including items, sales, orders, and clients</li>
           <li>Use <code>filter[reference]</code> to get all notes for a specific entity</li>
-          <li>The <code>sale_id</code> parameter provides additional filtering context</li>
           <li>Notes are typically sorted by creation date in descending order (<code>sort=-created</code>)</li>
           <li>Documents attached to notes can include PDFs, images, and other file types</li>
         </ul>
