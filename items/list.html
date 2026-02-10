@@ -178,6 +178,103 @@
         </table>
       </div>
 
+      <h5 class="mt-4">Fields Parameter</h5>
+      <p>The <code>fields</code> parameter allows you to specify which fields should be returned in the response. This helps reduce response size and improve performance by only returning the data you need.</p>
+
+      <h6>Default Response (No Fields Parameter)</h6>
+      <p>If no <code>fields</code> parameter is provided, only basic information will be returned:</p>
+      <pre><code class="language-bash">GET /api/v1.0/items-list?page=1&amp;range=10&amp;sale_id=309&amp;sort=-lot</code></pre>
+      <p><strong>Default fields returned:</strong> <code>display_id</code>, <code>lot</code>, <code>status</code></p>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "display_id": "736620000191",
+      "lot": "9191",
+      "status": {
+        "value": "new",
+        "label": "New"
+      }
+    },
+    {
+      "display_id": "736620000190",
+      "lot": "9190",
+      "status": {
+        "value": "new",
+        "label": "New"
+      }
+    }
+  ],
+  "count": 6820,
+  "self": {
+    "title": "Self",
+    "href": "https://test-hk.circuit.auction/en/api/v1.0/items-list"
+  },
+  "next": {
+    "title": "Next",
+    "href": "https://test-hk.circuit.auction/en/api/v1.0/items-list?page=2&range=10&sale_id=309&sort=-lot_number%2C-lot_letter"
+  }
+}</code></pre>
+
+      <h6>Custom Fields</h6>
+      <p>To get additional data, pass a comma-separated list of field names using the <code>fields</code> parameter:</p>
+      <pre><code class="language-bash">GET /api/v1.0/items-list?fields=id,lot,description,status,images&amp;range=10&amp;sale_id=309</code></pre>
+
+      <div class="alert alert-info">
+        <strong>Tip:</strong> Use the <code>fields</code> parameter to request only the data you need for better performance.
+      </div>
+
+      <h6>Available Fields</h6>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+            <tr>
+              <th>Field Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>Item node ID</td></tr>
+            <tr><td><code>display_id</code></td><td>Display ID (configured in system settings)</td></tr>
+            <tr><td><code>lot</code></td><td>Combined lot number and letter</td></tr>
+            <tr><td><code>lot_number</code></td><td>Lot number only</td></tr>
+            <tr><td><code>lot_letter</code></td><td>Lot letter only</td></tr>
+            <tr><td><code>temp_lot_number</code></td><td>Temporary lot number</td></tr>
+            <tr><td><code>description</code></td><td>Item description/title</td></tr>
+            <tr><td><code>opening_price</code></td><td>Opening/starting price</td></tr>
+            <tr><td><code>responsible_user</code></td><td>Responsible clerk/user name</td></tr>
+            <tr><td><code>item_type</code></td><td>Type of item</td></tr>
+            <tr><td><code>categories</code></td><td>Category names (comma-separated)</td></tr>
+            <tr><td><code>main_category_tid</code></td><td>Main category term ID</td></tr>
+            <tr><td><code>catalogue_part_name</code></td><td>Catalogue part name</td></tr>
+            <tr><td><code>tree_name</code></td><td>Category tree name</td></tr>
+            <tr><td><code>heading</code></td><td>Heading level in catalog</td></tr>
+            <tr><td><code>images</code></td><td>Item images information</td></tr>
+            <tr><td><code>status</code></td><td>Item status (available, sold, unsold, etc.)</td></tr>
+            <tr><td><code>sold_for</code></td><td>Final selling price</td></tr>
+            <tr><td><code>sold_status</code></td><td>Sold status</td></tr>
+            <tr><td><code>sale_title</code></td><td>Sale title</td></tr>
+            <tr><td><code>under_extension_status</code></td><td>Extension status</td></tr>
+            <tr><td><code>created</code></td><td>Creation timestamp</td></tr>
+            <tr><td><code>updated</code></td><td>Last update timestamp</td></tr>
+            <tr><td><code>consignment</code></td><td>Consignment ID</td></tr>
+            <tr><td><code>consignor_name</code></td><td>Consignor full name</td></tr>
+            <tr><td><code>consignment_owner_id</code></td><td>Consignment owner ID</td></tr>
+            <tr><td><code>consignment_id</code></td><td>Consignment identifier</td></tr>
+            <tr><td><code>consignor_reference_number</code></td><td>Consignor reference number</td></tr>
+            <tr><td><code>position_of_consignment</code></td><td>Position within consignment</td></tr>
+            <tr><td><code>catalogs</code></td><td>Catalog information</td></tr>
+            <tr><td><code>grouping_categories</code></td><td>Grouping category names</td></tr>
+            <tr><td><code>main_grouping_category_tid</code></td><td>Main grouping category term ID</td></tr>
+            <tr><td><code>symbols</code></td><td>Item symbols (for philately)</td></tr>
+            <tr><td><code>item_tags</code></td><td>Item tags</td></tr>
+            <tr><td><code>uuid</code></td><td>Universal unique identifier</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h6>Example with Multiple Fields</h6>
+      <pre><code class="language-bash">GET /api/v1.0/datatable-items?fields=id,catalogue_part_name,display_id,lot,opening_price,responsible_user,tree_name,catalogs,item_type,description,images,status,sold_for,under_extension_status,created,updated&amp;page=1&amp;range=10&amp;sale_id=309</code></pre>
+
       <h5 class="mt-4">Example Requests</h5>
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#example1">Items in Sale</a></li>
