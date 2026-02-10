@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pusher Events - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .event-name { font-family: 'Courier New', monospace; background: #d1ecf1; color: #0c5460; padding: 0.2rem 0.6rem; border-radius: 0.25rem; font-weight: 600; }
+      .param-table th { background-color: #f8f9fa; }
+      .section-title { border-bottom: 2px solid #0d6efd; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Circuit Auction API</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">API</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Pusher Events</li>
+    </ol>
+  </nav>
+
+  <h1 class="section-title">Pusher Real-Time Events</h1>
+  <p class="lead">Real-time event notifications for the Circuit Auction backoffice using Pusher WebSocket technology.</p>
+
+  <div class="alert alert-info">
+    <h5 class="alert-heading"><i class="fas fa-info-circle"></i> About Pusher Events</h5>
+    <p>The Circuit Auction API uses Pusher to provide real-time event notifications to connected clients. These events allow the backoffice application to react to changes as they happen, providing immediate feedback for operations like entity updates, queue processing, and bulk operations.</p>
+  </div>
+
+  <!-- Setup -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0">Setup & Installation</h4>
+    </div>
+    <div class="card-body">
+      <h5>1. Include Pusher.js Library</h5>
+      <p>Add the Pusher JavaScript library to your HTML:</p>
+      <pre><code class="language-html">&lt;script src="https://js.pusher.com/8.0/pusher.min.js">&lt;/script></code></pre>
+
+      <p class="mt-3">Or install via npm:</p>
+      <pre><code class="language-bash">npm install pusher-js</code></pre>
+
+      <h5 class="mt-4">2. Get Pusher Configuration</h5>
+      <p>First, you need to obtain the Pusher configuration from the API. This includes:</p>
+      <ul>
+        <li><strong>Pusher App Key:</strong> Your Pusher application key</li>
+        <li><strong>Cluster:</strong> The Pusher cluster region</li>
+        <li><strong>Private Channel Name:</strong> The private channel to subscribe to</li>
+      </ul>
+
+      <div class="alert alert-info">
+        <strong>Note:</strong> Contact your API administrator to obtain the Pusher app key, cluster, and private channel name for your application.
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuration -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0">Pusher Configuration</h4>
+    </div>
+    <div class="card-body">
+      <h5>Initialize Pusher Connection</h5>
+      <p>Create a Pusher instance with authentication:</p>
+      <pre><code class="language-javascript">// Replace these with your actual values
+const PUSHER_KEY = 'your-pusher-app-key';
+const PUSHER_CLUSTER = 'your-cluster'; // e.g., 'eu', 'us2', 'ap1'
+const PRIVATE_CHANNEL = 'private-your-channel-name';
+const API_BASE_URL = 'https://backoffice.ddev.site';
+const ACCESS_TOKEN = 'your-access-token'; // Obtained from /api/login-token
+
+// Initialize Pusher
+const pusher = new Pusher(PUSHER_KEY, {
+  cluster: PUSHER_CLUSTER,
+  encrypted: true,
+  forceTLS: true,
+  authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
+});</code></pre>
+
+      <h5 class="mt-4">Authentication</h5>
+      <p>The Pusher connection requires authentication through the API's pusher_auth endpoint:</p>
+      <ul>
+        <li><strong>Endpoint:</strong> <code>GET /api/v1.0/pusher_auth</code></li>
+        <li><strong>Authentication:</strong> Pass your access token as a query parameter</li>
+        <li><strong>Channel Type:</strong> Private channel (requires authentication)</li>
+      </ul>
+
+      <div class="alert alert-warning">
+        <strong>Important:</strong> The access token must be a valid token obtained from the <code>/api/login-token</code> endpoint. See the <a href="index.html#authentication">Authentication</a> documentation for details.
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscribing to Events -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0">Subscribing to Events</h4>
+    </div>
+    <div class="card-body">
+      <h5>Subscribe to Channel and Bind Events</h5>
+      <pre><code class="language-javascript">// Subscribe to the private channel
+const channel = pusher.subscribe(PRIVATE_CHANNEL);
+
+// Bind to a specific event
+channel.bind('entity_update', function(data) {
+  console.log('Entity updated:', data);
+
+  // Handle the event
+  if (data.bundle === 'item' && data.entity_id === currentItemId) {
+    console.log('Current item was updated');
+    // Refresh your UI or reload data
+  }
+});
+
+// Bind to multiple events
+channel.bind('advanced_queue__post_execute', function(data) {
+  console.log('Queue task completed:', data.name);
+
+  if (data.name === 'print_statement_by_signal') {
+    console.log('Statement printing complete');
+    // Update PDF links or show notification
+  }
+});
+
+channel.bind('item_bulk', function(data) {
+  console.log('Bulk operation complete:', data);
+  alert(`Successfully processed ${data.count} items`);
+});</code></pre>
+
+      <h5 class="mt-4">Handle Connection Events</h5>
+      <pre><code class="language-javascript">// Connection state changes
+pusher.connection.bind('connected', function() {
+  console.log('Connected to Pusher');
+});
+
+pusher.connection.bind('disconnected', function() {
+  console.log('Disconnected from Pusher');
+});
+
+// Handle errors
+pusher.connection.bind('error', function(error) {
+  console.error('Pusher connection error:', error);
+
+  if (error.error && error.error.data) {
+    console.error('Error code:', error.error.data.code);
+    console.error('Error message:', error.error.data.message);
+  }
+});</code></pre>
+
+      <h5 class="mt-4">Complete Example</h5>
+      <pre><code class="language-javascript">// Full implementation example
+const PUSHER_KEY = 'your-pusher-app-key';
+const PUSHER_CLUSTER = 'your-cluster';
+const PRIVATE_CHANNEL = 'private-your-channel-name';
+const API_BASE_URL = 'https://backoffice.ddev.site';
+const ACCESS_TOKEN = localStorage.getItem('access_token');
+
+// Initialize Pusher
+const pusher = new Pusher(PUSHER_KEY, {
+  cluster: PUSHER_CLUSTER,
+  encrypted: true,
+  forceTLS: true,
+  authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
+});
+
+// Subscribe to channel
+const channel = pusher.subscribe(PRIVATE_CHANNEL);
+
+// Listen for entity updates
+channel.bind('entity_update', function(data) {
+  const userId = localStorage.getItem('user_id');
+  const shouldReload = data.force_reload || (data.uid === userId);
+
+  if (shouldReload && data.bundle === 'item') {
+    console.log(`Item ${data.entity_id} was updated`);
+    // Refresh the item data in your application
+    reloadItem(data.entity_id);
+  }
+});
+
+// Listen for queue completion
+channel.bind('advanced_queue__post_execute', function(data) {
+  if (data.name === 'migrate_import_queue' && data.result) {
+    const successCount = data.result.result?.successes || 0;
+    console.log(`Import complete: ${successCount} items processed`);
+    // Show success message and refresh table
+    showNotification(`Import done! Processed ${successCount} items.`);
+    refreshDataTable();
+  }
+});
+
+// Handle connection errors
+pusher.connection.bind('error', function(error) {
+  if (error.error?.data?.code === 4004) {
+    console.error('Over connection quota');
+  } else if (error.error?.data?.code === 4001) {
+    console.error('Application disabled');
+  }
+});</code></pre>
+    </div>
+  </div>
+
+  <h2 class="mt-5 mb-4">Available Events</h2>
+
+  <!-- Entity Update Event -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">entity_update</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered when an entity (item, client, sale, task) is updated in the system.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Reload item page when item data changes</li>
+        <li>Refresh client information when client is updated</li>
+        <li>Update sale details when sale is modified</li>
+        <li>Refresh task list when task status changes</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Always "entity_update"</td>
+          </tr>
+          <tr>
+            <td><code>bundle</code></td>
+            <td>string</td>
+            <td>Entity type: "item", "client", "sale", "task"</td>
+          </tr>
+          <tr>
+            <td><code>entity_id</code></td>
+            <td>string</td>
+            <td>ID of the updated entity</td>
+          </tr>
+          <tr>
+            <td><code>uid</code></td>
+            <td>string</td>
+            <td>User ID who made the change</td>
+          </tr>
+          <tr>
+            <td><code>force_reload</code></td>
+            <td>boolean</td>
+            <td>Whether to force a page reload regardless of user</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to entity_update event
+channel.bind('entity_update', function(data) {
+  if (data.name === 'entity_update') {
+    const userId = localStorage.getItem('user_id');
+    const shouldReload = data.force_reload || (data.uid === userId);
+
+    if (shouldReload && data.bundle === 'item' && data.entity_id === currentItemId) {
+      // Reload the page to show updated item data
+      console.log('Reloading item:', data.entity_id);
+      fetchItemData(data.entity_id);
+    }
+
+    if (shouldReload && data.bundle === 'client' && data.entity_id === currentClientId) {
+      // Refresh client information
+      fetchClientData(data.entity_id);
+    }
+
+    if (shouldReload && data.bundle === 'sale' && data.entity_id === currentSaleId) {
+      // Refresh sale details
+      fetchSaleData(data.entity_id);
+    }
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>controllers/tasks.js:79</li>
+        <li>controllers/client-tab.js:158</li>
+        <li>controllers/dashboard/single-item.js:552</li>
+        <li>controllers/dashboard/sale.js:209</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Advanced Queue Post Execute -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">advanced_queue__post_execute</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered after a queue task completes execution. This is the most commonly used queue event.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Update PDF links after statement generation</li>
+        <li>Display sticker preview after print queue completion</li>
+        <li>Refresh address export list after CSV generation</li>
+        <li>Update order data after bulk operations</li>
+        <li>Show import results after migration queue completes</li>
+        <li>Update control list after verification tasks</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Queue task name (e.g., "print_statement_by_signal", "backoffice_print_sticker_queue")</td>
+          </tr>
+          <tr>
+            <td><code>label</code></td>
+            <td>string</td>
+            <td>Optional label for tracking (e.g., "via_bulk_{order_id}")</td>
+          </tr>
+          <tr>
+            <td><code>result</code></td>
+            <td>object</td>
+            <td>Task result data (structure varies by task type)</td>
+          </tr>
+          <tr>
+            <td><code>result.nid</code></td>
+            <td>string</td>
+            <td>Entity ID related to the task</td>
+          </tr>
+          <tr>
+            <td><code>result.data</code></td>
+            <td>object</td>
+            <td>Additional result data</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Common Task Names</h5>
+      <ul>
+        <li><code>print_statement_by_signal</code> - Statement printing completion</li>
+        <li><code>backoffice_print_sticker_queue</code> - Sticker printing completion</li>
+        <li><code>Export addresses to CSV</code> - Address export completion</li>
+        <li><code>migrate_import_queue</code> - Migration import completion</li>
+        <li><code>control_list_ih_check</code> - In-house control check completion</li>
+        <li><code>control_list_cs_check</code> - Consignment statement check completion</li>
+        <li><code>control_list_order_check</code> - Order control check completion</li>
+      </ul>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to advanced_queue__post_execute event
+channel.bind('advanced_queue__post_execute', function(data) {
+  // Handle statement printing completion
+  if (data.name === 'print_statement_by_signal' && data.result?.nid === entityId) {
+    // Update the last emailed invoice information
+    console.log('Statement printed for entity:', data.result.nid);
+    updateInvoiceDisplay(data.result);
+  }
+
+  // Handle sticker printing completion
+  if (data.name === 'backoffice_print_sticker_queue') {
+    console.log('Sticker print job completed');
+    if (data.result[0]?.print_job?.result?.result?.no_print_server) {
+      // Show sticker preview if no print server available
+      showStickerPreview(data.result[0].print_job.result.url);
+    }
+  }
+
+  // Handle bulk order operations
+  const bulkId = 'via_bulk_' + orderId;
+  if (data.label === bulkId) {
+    // Refresh order data after bulk operation
+    console.log('Bulk operation completed for order:', orderId);
+    refreshOrderData(data.result);
+  }
+
+  // Handle address export
+  if (data.name === 'Export addresses to CSV') {
+    console.log('Address export completed');
+    refreshAddressTable();
+  }
+
+  // Handle import completion
+  if (data.name === 'migrate_import_queue' && data.result) {
+    const successCount = data.result.result?.successes || 0;
+    showMessage('Import done! Total processed: ' + successCount);
+  }
+
+  // Handle control list checks
+  const controlTasks = ['control_list_ih_check', 'control_list_cs_check', 'control_list_order_check'];
+  if (controlTasks.includes(data.name)) {
+    console.log('Control check completed');
+    loadControlList();
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>directives/email-block.js:53</li>
+        <li>directives/download-last-invoice-pdf.js:51</li>
+        <li>controllers/dashboard/address-export.js:239</li>
+        <li>directives/orders/finder-fees-order.js:49</li>
+        <li>directives/orders/statement-of-account.js:50</li>
+        <li>directives/orders/credit-note-order.js:66</li>
+        <li>directives/orders/bidder-order.js:187</li>
+        <li>controllers/dashboard/client.js:102</li>
+        <li>controllers/dashboard/single-item.js:565</li>
+        <li>controllers/dashboard/consignment-statement-page.js:149</li>
+        <li>controllers/dashboard/sale.js:1193</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Advanced Queue Pre Execute -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">advanced_queue__pre_execute</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered when a queue task begins execution, before processing starts.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Display "processing" or "started" messages to users</li>
+        <li>Initialize progress indicators</li>
+        <li>Prepare UI for incoming results</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Queue task name (e.g., "migrate_import_queue", "knock_down_all_items")</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to advanced_queue__pre_execute event
+channel.bind('advanced_queue__pre_execute', function(data) {
+  if (data.name === 'migrate_import_queue') {
+    console.log('Import starting...');
+    showStatusMessage('Import Started...');
+    showProgressBar();
+  }
+
+  if (data.name === 'knock_down_all_items') {
+    console.log('Knock down process starting...');
+    showStatusMessage('Knocking down items...');
+    initializeProgressTracker();
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>controllers/dashboard/sale.js:1245</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Advanced Queue Create -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">advanced_queue__create</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered when a new queue task is created.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Track queue task creation</li>
+        <li>Monitor queue additions</li>
+        <li>Display queue status updates</li>
+      </ul>
+
+      <div class="alert alert-secondary">
+        <strong>Note:</strong> This event is mentioned in the PusherService comments but no active subscriptions were found in the codebase. It's available for use if needed.
+      </div>
+
+      <h6 class="mt-3">Referenced In:</h6>
+      <ul class="small">
+        <li>services/pusher.js:30 (comment)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Advanced Queue Update -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">advanced_queue__update</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered when a queue task is updated (e.g., status change, progress update).</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Update queue task status</li>
+        <li>Show progress updates</li>
+        <li>Monitor queue changes</li>
+      </ul>
+
+      <div class="alert alert-secondary">
+        <strong>Note:</strong> This event is mentioned in the PusherService comments but no active subscriptions were found in the codebase. It's available for use if needed.
+      </div>
+
+      <h6 class="mt-3">Referenced In:</h6>
+      <ul class="small">
+        <li>services/pusher.js:33 (comment)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Item Bulk Event -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">item_bulk</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered when bulk item operations complete (bulk updates, lot number assignments, revisions).</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Display bulk operation results</li>
+        <li>Show success messages with item counts</li>
+        <li>Update UI after mass item changes</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Operation name: "bulk_update", "item_lot_bulk", "item_bulk_retry", etc.</td>
+          </tr>
+          <tr>
+            <td><code>type</code></td>
+            <td>string</td>
+            <td>Operation type (e.g., "bulk")</td>
+          </tr>
+          <tr>
+            <td><code>count</code></td>
+            <td>integer</td>
+            <td>Number of items processed</td>
+          </tr>
+          <tr>
+            <td><code>status</code></td>
+            <td>string</td>
+            <td>Operation status: "success", "error", "warning"</td>
+          </tr>
+          <tr>
+            <td><code>message</code></td>
+            <td>string</td>
+            <td>Result message or error description</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to item_bulk event
+channel.bind('item_bulk', function(data) {
+  if (data.name === 'bulk_update' && data.type === 'bulk') {
+    console.log('Bulk update completed');
+    showSuccessMessage('Successfully created ' + data.count + ' revisions.');
+    refreshItemTable();
+  }
+
+  if (data.name === 'item_lot_bulk') {
+    console.log('Lot bulk operation completed');
+    showSuccessMessage('Successfully saved ' + data.count + ' items.');
+    refreshItemTable();
+  }
+
+  if (data.name === 'item_bulk_retry') {
+    console.log('Bulk retry completed with status:', data.status);
+    if (data.status === 'success') {
+      showSuccessMessage(data.message);
+    } else if (data.status === 'error') {
+      showErrorMessage(data.message);
+    } else if (data.status === 'warning') {
+      showWarningMessage(data.message);
+    }
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>controllers/dashboard/sale-lots.js:1043</li>
+        <li>controllers/dashboard/items-page.js:985</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Caller ID Event -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">caller_id</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered when an incoming phone call is detected, displaying caller information.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Display caller ID popup</li>
+        <li>Show client information for incoming calls</li>
+        <li>Quick access to client records during calls</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Always "caller_id"</td>
+          </tr>
+          <tr>
+            <td><code>username</code></td>
+            <td>string</td>
+            <td>Username of the staff member receiving the call</td>
+          </tr>
+          <tr>
+            <td><code>client</code></td>
+            <td>object</td>
+            <td>Client information for the caller</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to caller_id event
+channel.bind('caller_id', function(data) {
+  if (data.name === 'caller_id') {
+    const currentUsername = localStorage.getItem('username');
+
+    if (currentUsername === data.username) {
+      // Display the caller ID popup with client information
+      console.log('Incoming call from client:', data.client);
+      showCallerIdPopup({
+        clientName: data.client.name,
+        clientId: data.client.id,
+        phoneNumber: data.client.phone
+      });
+
+      // Optional: Play notification sound
+      playNotificationSound();
+
+      // Optional: Create quick link to client page
+      const clientUrl = `/clients/${data.client.id}`;
+      createQuickAccessLink(clientUrl);
+    }
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>controllers/dashboard/dashboard.js:111</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Control Update Event -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">control_update</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered during control list verification tasks to provide progress updates.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Display real-time progress during control checks</li>
+        <li>Show number of items processed</li>
+        <li>Update progress bars during verification</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Task name: "control_list_ih_check", "control_list_cs_check", "control_list_order_check"</td>
+          </tr>
+          <tr>
+            <td><code>total</code></td>
+            <td>integer</td>
+            <td>Number of items processed so far</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to control_update event
+const controlListTasks = [
+  'control_list_ih_check',
+  'control_list_cs_check',
+  'control_list_order_check'
+];
+
+channel.bind('control_update', function(data) {
+  if (controlListTasks.includes(data.name)) {
+    console.log('Control check progress:', data.total, 'items processed');
+
+    // Update progress message
+    updateProgressMessage('Processed ' + data.total + ' items.');
+
+    // Update progress bar if you have one
+    updateProgressBar(data.total, data.expected_total);
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>controllers/dashboard/sale.js:1221</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Knock Down All Items Event -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><span class="event-name">knock_down_all_items</span></h4>
+    </div>
+    <div class="card-body">
+      <p>Triggered during bulk knock-down operations to provide progress updates.</p>
+
+      <h5>Use Cases</h5>
+      <ul>
+        <li>Display knock-down progress</li>
+        <li>Show number of items knocked down</li>
+        <li>Update progress bars during bulk knock-down</li>
+      </ul>
+
+      <h5 class="mt-3">Event Data Structure</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>result</code></td>
+            <td>string</td>
+            <td>Progress message (e.g., "Knocked down 10 of 100 items...")</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Example Implementation</h5>
+      <pre><code class="language-javascript">// Subscribe to knock_down_all_items event
+channel.bind('knock_down_all_items', function(data) {
+  if (data.result) {
+    console.log('Knock down progress:', data.result);
+
+    // Update status message
+    updateStatusMessage(data.result);
+
+    // Extract progress from message (e.g., "Knocked down 10 of 100 items...")
+    const match = data.result.match(/(\d+)\s+of\s+(\d+)/);
+    if (match) {
+      const current = parseInt(match[1], 10);
+      const total = parseInt(match[2], 10);
+      const progressPercent = (current / total) * 100;
+
+      // Update progress bar
+      updateProgressBar(progressPercent);
+
+      // Update counter display
+      updateCounterDisplay(current, total);
+
+      console.log(`Progress: ${current}/${total} (${progressPercent.toFixed(1)}%)`);
+    }
+  }
+});</code></pre>
+
+      <h6 class="mt-3">Used In:</h6>
+      <ul class="small">
+        <li>controllers/dashboard/sale.js:1229</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Best Practices -->
+  <div class="card mb-4 border-info">
+    <div class="card-header bg-info text-white">
+      <h4 class="mb-0"><i class="fas fa-lightbulb"></i> Best Practices</h4>
+    </div>
+    <div class="card-body">
+      <h5>1. Check Event Names</h5>
+      <p>Always verify the <code>data.name</code> field to ensure you're handling the correct event, as multiple operations may use the same event type.</p>
+      <pre><code class="language-javascript">channel.bind('advanced_queue__post_execute', function(data) {
+  if (data.name === 'expected_task_name') {
+    // Handle specific task
+  }
+});</code></pre>
+
+      <h5 class="mt-3">2. User Filtering</h5>
+      <p>For entity updates, check if the update came from the current user to avoid unnecessary reloads:</p>
+      <pre><code class="language-javascript">channel.bind('entity_update', function(data) {
+  const userId = localStorage.getItem('user_id');
+  const shouldReload = data.force_reload || (data.uid === userId);
+
+  if (shouldReload) {
+    // Reload or refresh data
+  }
+});</code></pre>
+
+      <h5 class="mt-3">3. Entity ID Matching</h5>
+      <p>Verify that the event relates to the currently displayed entity:</p>
+      <pre><code class="language-javascript">channel.bind('entity_update', function(data) {
+  if (data.entity_id === currentEntityId && data.bundle === 'item') {
+    // Update current entity
+    fetchItemData(data.entity_id);
+  }
+});</code></pre>
+
+      <h5 class="mt-3">4. Safe Property Access</h5>
+      <p>Use optional chaining or null checks when accessing nested properties:</p>
+      <pre><code class="language-javascript">channel.bind('advanced_queue__post_execute', function(data) {
+  // Using optional chaining (ES2020+)
+  if (data.result?.nid === currentId) {
+    handleResult(data.result);
+  }
+
+  // Or traditional null check
+  if (data.result && data.result.nid === currentId) {
+    handleResult(data.result);
+  }
+});</code></pre>
+
+      <h5 class="mt-3">5. Label Tracking for Bulk Operations</h5>
+      <p>For bulk operations, use labels to match events with specific operations:</p>
+      <pre><code class="language-javascript">const bulkId = 'via_bulk_' + orderId;
+
+channel.bind('advanced_queue__post_execute', function(data) {
+  if (data.label === bulkId) {
+    // Handle this specific bulk operation
+    console.log('Bulk operation completed for order:', orderId);
+    refreshOrderData(data.result);
+  }
+});</code></pre>
+
+      <h5 class="mt-3">6. Unbind Events When Done</h5>
+      <p>Clean up event listeners when they're no longer needed to prevent memory leaks:</p>
+      <pre><code class="language-javascript">// Unbind a specific event
+channel.unbind('entity_update');
+
+// Unbind all events on a channel
+channel.unbind_all();
+
+// Unsubscribe from a channel
+pusher.unsubscribe(PRIVATE_CHANNEL);
+
+// Disconnect from Pusher entirely
+pusher.disconnect();</code></pre>
+
+      <h5 class="mt-3">7. Handle Reconnection</h5>
+      <p>Implement reconnection logic to handle temporary connection issues:</p>
+      <pre><code class="language-javascript">pusher.connection.bind('disconnected', function() {
+  console.log('Disconnected from Pusher');
+  showOfflineIndicator();
+});
+
+pusher.connection.bind('connected', function() {
+  console.log('Reconnected to Pusher');
+  hideOfflineIndicator();
+  // Optionally refresh data after reconnection
+  refreshCurrentPageData();
+});</code></pre>
+
+      <h5 class="mt-3">8. Secure Your Access Token</h5>
+      <p>Never expose your access token in client-side code or version control:</p>
+      <pre><code class="language-javascript">// GOOD: Get token from secure storage
+const accessToken = localStorage.getItem('access_token');
+
+// BAD: Hardcoding token in code
+// const accessToken = 'abc123...';</code></pre>
+    </div>
+  </div>
+
+  <!-- Error Handling -->
+  <div class="card mb-4 border-warning">
+    <div class="card-header bg-warning">
+      <h4 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Error Handling</h4>
+    </div>
+    <div class="card-body">
+      <h5>Connection Errors</h5>
+      <p>Handle Pusher connection errors to provide feedback to users:</p>
+      <pre><code class="language-javascript">pusher.connection.bind('error', function(error) {
+  console.error('Pusher connection error:', error);
+
+  // Extract error details
+  const errorMessage = error.error?.data?.message || 'Unknown error';
+  const errorCode = error.error?.data?.code || null;
+
+  // Log the error
+  console.error('Error code:', errorCode);
+  console.error('Error message:', errorMessage);
+
+  // Handle specific error codes
+  switch(errorCode) {
+    case 4001:
+      showError('Pusher application is disabled. Please contact support.');
+      break;
+    case 4003:
+      showError('Invalid Pusher configuration. Please check your settings.');
+      break;
+    case 4004:
+      showError('Connection limit reached. Please try again later.');
+      break;
+    case 4100:
+      showError('Too many connections. Please reduce concurrent connections.');
+      break;
+    case 4200:
+      showError('Connection error. Attempting to reconnect...');
+      break;
+    default:
+      showError('Connection error: ' + errorMessage);
+  }
+
+  // Optional: Send error to your error tracking service
+  logErrorToService({
+    type: 'pusher_error',
+    code: errorCode,
+    message: errorMessage
+  });
+});</code></pre>
+
+      <h5 class="mt-3">Common Error Codes</h5>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Recommended Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>4001</code></td>
+            <td>Application disabled or deleted</td>
+            <td>Contact administrator to check Pusher app status</td>
+          </tr>
+          <tr>
+            <td><code>4003</code></td>
+            <td>Invalid Pusher key</td>
+            <td>Verify the Pusher key in your configuration</td>
+          </tr>
+          <tr>
+            <td><code>4004</code></td>
+            <td>Over connection quota</td>
+            <td>Upgrade Pusher plan or reduce connections</td>
+          </tr>
+          <tr>
+            <td><code>4100</code></td>
+            <td>Connection limit exceeded</td>
+            <td>Close unused connections or upgrade plan</td>
+          </tr>
+          <tr>
+            <td><code>4200</code></td>
+            <td>Generic reconnect error</td>
+            <td>Wait and let Pusher auto-reconnect</td>
+          </tr>
+          <tr>
+            <td><code>4201</code></td>
+            <td>Pong reply not received</td>
+            <td>Check network connectivity</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-3">Connection State Monitoring</h5>
+      <pre><code class="language-javascript">// Monitor all connection state changes
+pusher.connection.bind('state_change', function(states) {
+  console.log('Connection state changed from', states.previous, 'to', states.current);
+
+  // Update UI based on connection state
+  switch(states.current) {
+    case 'connected':
+      showOnlineIndicator();
+      hideReconnectingMessage();
+      break;
+    case 'connecting':
+      showConnectingIndicator();
+      break;
+    case 'disconnected':
+      showOfflineIndicator();
+      break;
+    case 'unavailable':
+      showUnavailableMessage();
+      break;
+    case 'failed':
+      showFailedMessage();
+      break;
+  }
+});
+
+// Handle specific states
+pusher.connection.bind('unavailable', function() {
+  console.warn('Pusher is unavailable');
+  showWarning('Real-time updates are temporarily unavailable');
+});
+
+pusher.connection.bind('failed', function() {
+  console.error('Pusher connection failed');
+  showError('Unable to establish real-time connection. Please refresh the page.');
+});</code></pre>
+
+      <h5 class="mt-3">Authentication Errors</h5>
+      <p>Handle errors when subscribing to private channels:</p>
+      <pre><code class="language-javascript">const channel = pusher.subscribe(PRIVATE_CHANNEL);
+
+channel.bind('pusher:subscription_error', function(status) {
+  console.error('Subscription error:', status);
+
+  if (status === 403) {
+    showError('Authentication failed. Please log in again.');
+    // Redirect to login page
+    window.location.href = '/login';
+  } else if (status === 408) {
+    showError('Subscription timeout. Please check your network connection.');
+  } else {
+    showError('Failed to subscribe to real-time updates.');
+  }
+});
+
+// Handle successful subscription
+channel.bind('pusher:subscription_succeeded', function() {
+  console.log('Successfully subscribed to channel');
+  showSuccess('Real-time updates enabled');
+});</code></pre>
+    </div>
+  </div>
+
+  <!-- Complete Working Example -->
+  <div class="card mb-4 border-success">
+    <div class="card-header bg-success text-white">
+      <h4 class="mb-0"><i class="fas fa-code"></i> Complete Working Example</h4>
+    </div>
+    <div class="card-body">
+      <p>Here's a complete example integrating all the concepts:</p>
+      <pre><code class="language-html">&lt;!DOCTYPE html>
+&lt;html lang="en">
+&lt;head>
+  &lt;meta charset="UTF-8">
+  &lt;title>Pusher Events Example&lt;/title>
+  &lt;script src="https://js.pusher.com/8.0/pusher.min.js">&lt;/script>
+&lt;/head>
+&lt;body>
+  &lt;div id="status">Connecting...&lt;/div>
+  &lt;div id="messages">&lt;/div>
+
+  &lt;script>
+    // Configuration - Replace with your actual values
+    const CONFIG = {
+      PUSHER_KEY: 'your-pusher-app-key',
+      PUSHER_CLUSTER: 'your-cluster',
+      PRIVATE_CHANNEL: 'private-your-channel-name',
+      API_BASE_URL: 'https://backoffice.ddev.site',
+      ACCESS_TOKEN: localStorage.getItem('access_token')
+    };
+
+    // Initialize Pusher
+    const pusher = new Pusher(CONFIG.PUSHER_KEY, {
+      cluster: CONFIG.PUSHER_CLUSTER,
+      encrypted: true,
+      forceTLS: true,
+      authEndpoint: `${CONFIG.API_BASE_URL}/api/v1.0/pusher_auth?access_token=${CONFIG.ACCESS_TOKEN}`
+    });
+
+    // Monitor connection state
+    const statusEl = document.getElementById('status');
+    const messagesEl = document.getElementById('messages');
+
+    pusher.connection.bind('state_change', function(states) {
+      statusEl.textContent = `Status: ${states.current}`;
+      console.log('State changed:', states.previous, '->', states.current);
+    });
+
+    pusher.connection.bind('connected', function() {
+      statusEl.textContent = 'Connected';
+      statusEl.style.color = 'green';
+    });
+
+    pusher.connection.bind('error', function(error) {
+      const errorCode = error.error?.data?.code;
+      const errorMsg = error.error?.data?.message || 'Unknown error';
+      statusEl.textContent = `Error: ${errorMsg}`;
+      statusEl.style.color = 'red';
+      console.error('Connection error:', errorCode, errorMsg);
+    });
+
+    // Subscribe to private channel
+    const channel = pusher.subscribe(CONFIG.PRIVATE_CHANNEL);
+
+    // Handle subscription events
+    channel.bind('pusher:subscription_succeeded', function() {
+      console.log('Successfully subscribed to channel');
+      addMessage('Subscribed to real-time events', 'success');
+    });
+
+    channel.bind('pusher:subscription_error', function(status) {
+      console.error('Subscription failed:', status);
+      addMessage('Failed to subscribe: ' + status, 'error');
+    });
+
+    // Subscribe to application events
+    channel.bind('entity_update', function(data) {
+      console.log('Entity updated:', data);
+      addMessage(`${data.bundle} updated: ${data.entity_id}`, 'info');
+    });
+
+    channel.bind('advanced_queue__post_execute', function(data) {
+      console.log('Queue task completed:', data.name);
+      addMessage(`Task completed: ${data.name}`, 'success');
+    });
+
+    channel.bind('item_bulk', function(data) {
+      console.log('Bulk operation:', data);
+      addMessage(`Bulk ${data.name}: ${data.count} items`, 'info');
+    });
+
+    channel.bind('caller_id', function(data) {
+      console.log('Incoming call:', data);
+      addMessage(`Incoming call from: ${data.client?.name || 'Unknown'}`, 'warning');
+    });
+
+    // Helper function to display messages
+    function addMessage(text, type = 'info') {
+      const msg = document.createElement('div');
+      msg.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+      msg.style.padding = '5px';
+      msg.style.margin = '5px 0';
+      msg.style.borderLeft = '3px solid ' + getColor(type);
+      messagesEl.insertBefore(msg, messagesEl.firstChild);
+    }
+
+    function getColor(type) {
+      const colors = {
+        success: '#28a745',
+        error: '#dc3545',
+        warning: '#ffc107',
+        info: '#17a2b8'
+      };
+      return colors[type] || colors.info;
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+      pusher.disconnect();
+    });
+  &lt;/script>
+&lt;/body>
+&lt;/html></code></pre>
+    </div>
+  </div>
+
+  <!-- Testing Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0"><i class="fas fa-vial"></i> Testing Pusher Connection</h4>
+    </div>
+    <div class="card-body">
+      <h5>Debug Mode</h5>
+      <p>Enable Pusher's debug mode to see detailed logging:</p>
+      <pre><code class="language-javascript">// Enable Pusher logging (for development only)
+Pusher.logToConsole = true;
+
+const pusher = new Pusher(PUSHER_KEY, {
+  cluster: PUSHER_CLUSTER,
+  encrypted: true,
+  forceTLS: true,
+  authEndpoint: authEndpoint
+});</code></pre>
+
+      <h5 class="mt-3">Test Connection</h5>
+      <p>Verify your Pusher connection is working:</p>
+      <pre><code class="language-javascript">// Check connection state
+console.log('Connection state:', pusher.connection.state);
+
+// Available states: initialized, connecting, connected, unavailable, failed, disconnected
+
+// Manually trigger connection (if needed)
+pusher.connect();
+
+// Check if connected
+if (pusher.connection.state === 'connected') {
+  console.log('Pusher is connected');
+} else {
+  console.log('Pusher is not connected:', pusher.connection.state);
+}</code></pre>
+
+      <h5 class="mt-3">Verify Channel Subscription</h5>
+      <pre><code class="language-javascript">// Get channel object
+const channel = pusher.channel(PRIVATE_CHANNEL);
+
+if (channel && channel.subscribed) {
+  console.log('Successfully subscribed to channel');
+} else {
+  console.log('Not subscribed to channel');
+}
+
+// List all subscribed channels
+console.log('All channels:', pusher.allChannels());</code></pre>
+
+      <h5 class="mt-3">Test Event Reception</h5>
+      <p>Use Pusher's debug console to send test events:</p>
+      <ol>
+        <li>Go to your Pusher dashboard at <a href="https://dashboard.pusher.com" target="_blank">dashboard.pusher.com</a></li>
+        <li>Select your application</li>
+        <li>Navigate to "Debug Console"</li>
+        <li>Send a test event to your private channel to verify it's received</li>
+      </ol>
+
+      <div class="alert alert-info mt-3">
+        <strong>Tip:</strong> Check your browser's Network tab to see the WebSocket connection and authentication requests to the <code>/api/v1.0/pusher_auth</code> endpoint.
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Table -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0">Quick Reference</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>Event Name</th>
+            <th>Purpose</th>
+            <th>Frequency</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>entity_update</code></td>
+            <td>Entity changes (items, clients, sales, tasks)</td>
+            <td>Very Common</td>
+          </tr>
+          <tr>
+            <td><code>advanced_queue__post_execute</code></td>
+            <td>Queue task completion</td>
+            <td>Very Common</td>
+          </tr>
+          <tr>
+            <td><code>advanced_queue__pre_execute</code></td>
+            <td>Queue task start</td>
+            <td>Common</td>
+          </tr>
+          <tr>
+            <td><code>item_bulk</code></td>
+            <td>Bulk item operations</td>
+            <td>Common</td>
+          </tr>
+          <tr>
+            <td><code>control_update</code></td>
+            <td>Control verification progress</td>
+            <td>Occasional</td>
+          </tr>
+          <tr>
+            <td><code>knock_down_all_items</code></td>
+            <td>Bulk knock-down progress</td>
+            <td>Occasional</td>
+          </tr>
+          <tr>
+            <td><code>caller_id</code></td>
+            <td>Incoming call notifications</td>
+            <td>Occasional</td>
+          </tr>
+          <tr>
+            <td><code>advanced_queue__create</code></td>
+            <td>Queue task creation</td>
+            <td>Rare (available but unused)</td>
+          </tr>
+          <tr>
+            <td><code>advanced_queue__update</code></td>
+            <td>Queue task updates</td>
+            <td>Rare (available but unused)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <a href="index.html" class="btn btn-outline-secondary mb-5">Back to API Home</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
