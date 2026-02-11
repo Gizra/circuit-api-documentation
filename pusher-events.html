@@ -65,16 +65,53 @@
       <p class="mt-3">Or install via npm:</p>
       <pre><code class="language-bash">npm install pusher-js</code></pre>
 
-      <h5 class="mt-4">2. Get Pusher Configuration</h5>
-      <p>First, you need to obtain the Pusher configuration from the API. This includes:</p>
+      <h5 class="mt-4">2. Get Pusher Configuration from API</h5>
+      <p>Retrieve the Pusher configuration from the <code>GET /api/me</code> endpoint. This endpoint returns user information along with configuration settings including:</p>
       <ul>
-        <li><strong>Pusher App Key:</strong> Your Pusher application key</li>
-        <li><strong>Cluster:</strong> The Pusher cluster region</li>
-        <li><strong>Private Channel Name:</strong> The private channel to subscribe to</li>
+        <li><strong>pusherConfig.key:</strong> Your Pusher application key</li>
+        <li><strong>pusherConfig.cluster:</strong> The Pusher cluster region (e.g., 'eu', 'us2')</li>
+        <li><strong>pusherConfig.privateChannel:</strong> The private channel name to subscribe to</li>
       </ul>
+      <p>For authentication, you'll use the regular access token obtained from <code>/api/login-token</code>. See <a href="authentication.html">Authentication documentation</a> for details.</p>
+
+      <h6 class="mt-3">Example API Request</h6>
+      <pre><code class="language-javascript">// Get user configuration including Pusher settings
+const ACCESS_TOKEN = localStorage.getItem('access_token'); // From /api/login-token
+
+fetch(`https://backoffice.ddev.site/api/me?access_token=${ACCESS_TOKEN}`)
+  .then(response => response.json())
+  .then(data => {
+    const config = data.data[0].config;
+    const pusherKey = config.pusherConfig.key;
+    const pusherCluster = config.pusherConfig.cluster;
+    const privateChannel = config.pusherConfig.privateChannel;
+
+    console.log('Pusher Key:', pusherKey);
+    console.log('Pusher Cluster:', pusherCluster);
+    console.log('Private Channel:', privateChannel);
+
+    // Use these values to initialize Pusher (see below)
+  });</code></pre>
+
+      <h6 class="mt-3">Example API Response (Relevant Fields)</h6>
+      <pre><code class="language-json">{
+  "data": [{
+    "id": "1",
+    "label": "admin",
+    "config": {
+      ...
+      "pusherConfig": {
+        "key": "e589860bfd6885f493bf",
+        "cluster": "eu",
+        "privateChannel": "private-general@backoffice-hk-eu-local"
+      },
+      ...
+    }
+  }]
+}</code></pre>
 
       <div class="alert alert-info">
-        <strong>Note:</strong> Contact your API administrator to obtain the Pusher app key, cluster, and private channel name for your application.
+        <strong>Note:</strong> All Pusher configuration is provided in the <code>config.pusherConfig</code> object within the API response. See the <a href="api-me.html">API /me Documentation</a> for complete response details.
       </div>
     </div>
   </div>
@@ -86,21 +123,36 @@
     </div>
     <div class="card-body">
       <h5>Initialize Pusher Connection</h5>
-      <p>Create a Pusher instance with authentication:</p>
-      <pre><code class="language-javascript">// Replace these with your actual values
-const PUSHER_KEY = 'your-pusher-app-key';
-const PUSHER_CLUSTER = 'your-cluster'; // e.g., 'eu', 'us2', 'ap1'
-const PRIVATE_CHANNEL = 'private-your-channel-name';
+      <p>Create a Pusher instance using configuration from <code>/api/me</code>:</p>
+      <pre><code class="language-javascript">// Get configuration from /api/me endpoint
 const API_BASE_URL = 'https://backoffice.ddev.site';
-const ACCESS_TOKEN = 'your-access-token'; // Obtained from /api/login-token
+const ACCESS_TOKEN = localStorage.getItem('access_token'); // From /api/login-token
 
-// Initialize Pusher
-const pusher = new Pusher(PUSHER_KEY, {
-  cluster: PUSHER_CLUSTER,
-  encrypted: true,
-  forceTLS: true,
-  authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
-});</code></pre>
+fetch(`${API_BASE_URL}/api/me?access_token=${ACCESS_TOKEN}`)
+  .then(response => response.json())
+  .then(data => {
+    const config = data.data[0].config;
+
+    // Extract Pusher configuration from API response
+    const PUSHER_KEY = config.pusherConfig.key;
+    const PUSHER_CLUSTER = config.pusherConfig.cluster;
+    const PRIVATE_CHANNEL = config.pusherConfig.privateChannel;
+
+    // Initialize Pusher with regular access token for authentication
+    const pusher = new Pusher(PUSHER_KEY, {
+      cluster: PUSHER_CLUSTER,
+      encrypted: true,
+      forceTLS: true,
+      authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
+    });
+
+    // Continue with channel subscription (see below)
+    setupPusherChannels(pusher, PRIVATE_CHANNEL);
+  });</code></pre>
+
+      <div class="alert alert-info mt-3">
+        <strong>Note:</strong> Use the regular access token from <code>/api/login-token</code> for Pusher authentication. All Pusher settings (key, cluster, privateChannel) are available in <code>config.pusherConfig</code>.
+      </div>
 
       <h5 class="mt-4">Authentication</h5>
       <p>The Pusher connection requires authentication through the API's pusher_auth endpoint:</p>
@@ -173,55 +225,65 @@ pusher.connection.bind('error', function(error) {
 });</code></pre>
 
       <h5 class="mt-4">Complete Example</h5>
-      <pre><code class="language-javascript">// Full implementation example
-const PUSHER_KEY = 'your-pusher-app-key';
-const PUSHER_CLUSTER = 'your-cluster';
-const PRIVATE_CHANNEL = 'private-your-channel-name';
+      <pre><code class="language-javascript">// Full implementation example - get config from /api/me first
 const API_BASE_URL = 'https://backoffice.ddev.site';
-const ACCESS_TOKEN = localStorage.getItem('access_token');
+const ACCESS_TOKEN = localStorage.getItem('access_token'); // From /api/login-token
 
-// Initialize Pusher
-const pusher = new Pusher(PUSHER_KEY, {
-  cluster: PUSHER_CLUSTER,
-  encrypted: true,
-  forceTLS: true,
-  authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
-});
+// Fetch configuration
+fetch(`${API_BASE_URL}/api/me?access_token=${ACCESS_TOKEN}`)
+  .then(response => response.json())
+  .then(data => {
+    const config = data.data[0].config;
+    const PUSHER_KEY = config.pusherConfig.key;
+    const PUSHER_CLUSTER = config.pusherConfig.cluster;
+    const PRIVATE_CHANNEL = config.pusherConfig.privateChannel;
 
-// Subscribe to channel
-const channel = pusher.subscribe(PRIVATE_CHANNEL);
+    // Initialize Pusher with regular access token
+    const pusher = new Pusher(PUSHER_KEY, {
+      cluster: PUSHER_CLUSTER,
+      encrypted: true,
+      forceTLS: true,
+      authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
+    });
 
-// Listen for entity updates
-channel.bind('entity_update', function(data) {
-  const userId = localStorage.getItem('user_id');
-  const shouldReload = data.force_reload || (data.uid === userId);
+    // Subscribe to channel
+    const channel = pusher.subscribe(PRIVATE_CHANNEL);
 
-  if (shouldReload && data.bundle === 'item') {
-    console.log(`Item ${data.entity_id} was updated`);
-    // Refresh the item data in your application
-    reloadItem(data.entity_id);
-  }
-});
+    // Listen for entity updates
+    channel.bind('entity_update', function(data) {
+      const userId = localStorage.getItem('user_id');
+      const shouldReload = data.force_reload || (data.uid === userId);
 
-// Listen for queue completion
-channel.bind('advanced_queue__post_execute', function(data) {
-  if (data.name === 'migrate_import_queue' && data.result) {
-    const successCount = data.result.result?.successes || 0;
-    console.log(`Import complete: ${successCount} items processed`);
-    // Show success message and refresh table
-    showNotification(`Import done! Processed ${successCount} items.`);
-    refreshDataTable();
-  }
-});
+      if (shouldReload && data.bundle === 'item') {
+        console.log(`Item ${data.entity_id} was updated`);
+        // Refresh the item data in your application
+        reloadItem(data.entity_id);
+      }
+    });
 
-// Handle connection errors
-pusher.connection.bind('error', function(error) {
-  if (error.error?.data?.code === 4004) {
-    console.error('Over connection quota');
-  } else if (error.error?.data?.code === 4001) {
-    console.error('Application disabled');
-  }
-});</code></pre>
+    // Listen for queue completion
+    channel.bind('advanced_queue__post_execute', function(data) {
+      if (data.name === 'migrate_import_queue' && data.result) {
+        const successCount = data.result.result?.successes || 0;
+        console.log(`Import complete: ${successCount} items processed`);
+        // Show success message and refresh table
+        showNotification(`Import done! Processed ${successCount} items.`);
+        refreshDataTable();
+      }
+    });
+
+    // Handle connection errors
+    pusher.connection.bind('error', function(error) {
+      if (error.error?.data?.code === 4004) {
+        console.error('Over connection quota');
+      } else if (error.error?.data?.code === 4001) {
+        console.error('Application disabled');
+      }
+    });
+  })
+  .catch(error => {
+    console.error('Failed to initialize Pusher:', error);
+  });</code></pre>
     </div>
   </div>
 
@@ -1079,79 +1141,95 @@ channel.bind('pusher:subscription_succeeded', function() {
   &lt;div id="messages">&lt;/div>
 
   &lt;script>
-    // Configuration - Replace with your actual values
-    const CONFIG = {
-      PUSHER_KEY: 'your-pusher-app-key',
-      PUSHER_CLUSTER: 'your-cluster',
-      PRIVATE_CHANNEL: 'private-your-channel-name',
-      API_BASE_URL: 'https://backoffice.ddev.site',
-      ACCESS_TOKEN: localStorage.getItem('access_token')
-    };
-
-    // Initialize Pusher
-    const pusher = new Pusher(CONFIG.PUSHER_KEY, {
-      cluster: CONFIG.PUSHER_CLUSTER,
-      encrypted: true,
-      forceTLS: true,
-      authEndpoint: `${CONFIG.API_BASE_URL}/api/v1.0/pusher_auth?access_token=${CONFIG.ACCESS_TOKEN}`
-    });
-
-    // Monitor connection state
+    // Configuration
+    const API_BASE_URL = 'https://backoffice.ddev.site';
+    const ACCESS_TOKEN = localStorage.getItem('access_token'); // From /api/login-token
     const statusEl = document.getElementById('status');
     const messagesEl = document.getElementById('messages');
 
-    pusher.connection.bind('state_change', function(states) {
-      statusEl.textContent = `Status: ${states.current}`;
-      console.log('State changed:', states.previous, '->', states.current);
-    });
+    // Fetch Pusher configuration from /api/me
+    fetch(`${API_BASE_URL}/api/me?access_token=${ACCESS_TOKEN}`)
+      .then(response => response.json())
+      .then(data => {
+        const config = data.data[0].config;
 
-    pusher.connection.bind('connected', function() {
-      statusEl.textContent = 'Connected';
-      statusEl.style.color = 'green';
-    });
+        // Extract Pusher configuration
+        const PUSHER_KEY = config.pusherConfig.key;
+        const PUSHER_CLUSTER = config.pusherConfig.cluster;
+        const PRIVATE_CHANNEL = config.pusherConfig.privateChannel;
 
-    pusher.connection.bind('error', function(error) {
-      const errorCode = error.error?.data?.code;
-      const errorMsg = error.error?.data?.message || 'Unknown error';
-      statusEl.textContent = `Error: ${errorMsg}`;
-      statusEl.style.color = 'red';
-      console.error('Connection error:', errorCode, errorMsg);
-    });
+        // Initialize Pusher with regular access token
+        const pusher = new Pusher(PUSHER_KEY, {
+          cluster: PUSHER_CLUSTER,
+          encrypted: true,
+          forceTLS: true,
+          authEndpoint: `${API_BASE_URL}/api/v1.0/pusher_auth?access_token=${ACCESS_TOKEN}`
+        });
 
-    // Subscribe to private channel
-    const channel = pusher.subscribe(CONFIG.PRIVATE_CHANNEL);
+        // Monitor connection state
+        pusher.connection.bind('state_change', function(states) {
+          statusEl.textContent = `Status: ${states.current}`;
+          console.log('State changed:', states.previous, '->', states.current);
+        });
 
-    // Handle subscription events
-    channel.bind('pusher:subscription_succeeded', function() {
-      console.log('Successfully subscribed to channel');
-      addMessage('Subscribed to real-time events', 'success');
-    });
+        pusher.connection.bind('connected', function() {
+          statusEl.textContent = 'Connected';
+          statusEl.style.color = 'green';
+        });
 
-    channel.bind('pusher:subscription_error', function(status) {
-      console.error('Subscription failed:', status);
-      addMessage('Failed to subscribe: ' + status, 'error');
-    });
+        pusher.connection.bind('error', function(error) {
+          const errorCode = error.error?.data?.code;
+          const errorMsg = error.error?.data?.message || 'Unknown error';
+          statusEl.textContent = `Error: ${errorMsg}`;
+          statusEl.style.color = 'red';
+          console.error('Connection error:', errorCode, errorMsg);
+        });
 
-    // Subscribe to application events
-    channel.bind('entity_update', function(data) {
-      console.log('Entity updated:', data);
-      addMessage(`${data.bundle} updated: ${data.entity_id}`, 'info');
-    });
+        // Subscribe to private channel
+        const channel = pusher.subscribe(PRIVATE_CHANNEL);
 
-    channel.bind('advanced_queue__post_execute', function(data) {
-      console.log('Queue task completed:', data.name);
-      addMessage(`Task completed: ${data.name}`, 'success');
-    });
+        // Handle subscription events
+        channel.bind('pusher:subscription_succeeded', function() {
+          console.log('Successfully subscribed to channel');
+          addMessage('Subscribed to real-time events', 'success');
+        });
 
-    channel.bind('item_bulk', function(data) {
-      console.log('Bulk operation:', data);
-      addMessage(`Bulk ${data.name}: ${data.count} items`, 'info');
-    });
+        channel.bind('pusher:subscription_error', function(status) {
+          console.error('Subscription failed:', status);
+          addMessage('Failed to subscribe: ' + status, 'error');
+        });
 
-    channel.bind('caller_id', function(data) {
-      console.log('Incoming call:', data);
-      addMessage(`Incoming call from: ${data.client?.name || 'Unknown'}`, 'warning');
-    });
+        // Subscribe to application events
+        channel.bind('entity_update', function(data) {
+          console.log('Entity updated:', data);
+          addMessage(`${data.bundle} updated: ${data.entity_id}`, 'info');
+        });
+
+        channel.bind('advanced_queue__post_execute', function(data) {
+          console.log('Queue task completed:', data.name);
+          addMessage(`Task completed: ${data.name}`, 'success');
+        });
+
+        channel.bind('item_bulk', function(data) {
+          console.log('Bulk operation:', data);
+          addMessage(`Bulk ${data.name}: ${data.count} items`, 'info');
+        });
+
+        channel.bind('caller_id', function(data) {
+          console.log('Incoming call:', data);
+          addMessage(`Incoming call from: ${data.client?.name || 'Unknown'}`, 'warning');
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+          pusher.disconnect();
+        });
+      })
+      .catch(error => {
+        console.error('Failed to initialize Pusher:', error);
+        statusEl.textContent = 'Failed to load configuration';
+        statusEl.style.color = 'red';
+      });
 
     // Helper function to display messages
     function addMessage(text, type = 'info') {
@@ -1172,11 +1250,6 @@ channel.bind('pusher:subscription_succeeded', function() {
       };
       return colors[type] || colors.info;
     }
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', function() {
-      pusher.disconnect();
-    });
   &lt;/script>
 &lt;/body>
 &lt;/html></code></pre>
