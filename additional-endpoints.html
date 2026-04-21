@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Additional Endpoints - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Circuit Auction API v1.0</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="clients/list.html">Clients</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">API</a></li>
+      <li class="breadcrumb-item active">Additional Endpoints</li>
+    </ol>
+  </nav>
+
+  <h1>Additional API Endpoints</h1>
+  <p class="lead">List of additional endpoints available in the API, grouped by category. Most use standard GET params like <code>range</code>, <code>sort</code>, <code>filter[]</code>. Use <code>?access_token=<token></code> for auth.</p>
+
+  <h2>Activities</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/activities</code></td><td>Activities endpoint (contract signed, etc.)</td></tr>
+      <tr><td><code class="endpoint">/activities-messages</code></td><td>Activities related to messages</td></tr>
+      <tr><td><code class="endpoint">/activities-nodes</code></td><td>Activities linked to nodes</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Authentication</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/access_token</code></td><td>Access token management</td></tr>
+      <tr><td><code class="endpoint">/bo_auth</code></td><td>Backend authentication</td></tr>
+      <tr><td><code class="endpoint">/get-client-token</code></td><td>Retrieve client-specific token</td></tr>
+      <tr><td><code class="endpoint">/google-login-url</code></td><td>Google OAuth login URL</td></tr>
+      <tr><td><code class="endpoint">/reset-password</code></td><td>Password reset</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Bidding</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/bidding-status</code></td><td>Current bidding status</td></tr>
+      <tr><td><code class="endpoint">/bids</code></td><td>Bid management</td></tr>
+      <tr><td><code class="endpoint">/bids_confirmation</code></td><td>Bid confirmations</td></tr>
+      <tr><td><code class="endpoint">/bid-server-auth-session</code></td><td>Bid server session auth</td></tr>
+      <tr><td><code class="endpoint">/delete-winning-bid</code></td><td>Remove winning bid</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Clients</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/client-balance-history</code></td><td>Client balance history</td></tr>
+      <tr><td><code class="endpoint">/client-connect</code></td><td>Connect clients</td></tr>
+      <tr><td><code class="endpoint">/client-merge</code></td><td>Merge client records</td></tr>
+      <tr><td><code class="endpoint">/client-stat</code></td><td>Client statistics</td></tr>
+      <tr><td><code class="endpoint">/client-stat-summary</code></td><td>Summary of client stats</td></tr>
+      <tr><td><code class="endpoint">/client_tags</code></td><td>Client tags taxonomy</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Computed</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/area_of_interest</code></td><td>Areas of interest</td></tr>
+      <tr><td><code class="endpoint">/bank_accounts</code></td><td>Bank account data</td></tr>
+      <tr><td><code class="endpoint">/calls</code></td><td>Call logs</td></tr>
+      <tr><td><code class="endpoint">/categories</code></td><td>Item categories</td></tr>
+      <tr><td><code class="endpoint">/categories-stats</code></td><td>Category statistics</td></tr>
+      <tr><td><code class="endpoint">/clerk-stats</code></td><td>Clerk performance stats</td></tr>
+      <tr><td><code class="endpoint">/connected-entities</code></td><td>Related entities</td></tr>
+      <tr><td><code class="endpoint">/control-list-consigner</code></td><td>Consigner control list</td></tr>
+      <tr><td><code class="endpoint">/lot-number-stats</code></td><td>Lot number statistics</td></tr>
+      <tr><td><code class="endpoint">/sale-lot-stats</code></td><td>Sale lot stats</td></tr>
+      <tr><td><code class="endpoint">/sale-stats</code></td><td>Sale statistics</td></tr>
+      <tr><td><code class="endpoint">/staff</code></td><td>Staff data</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Consignments</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/consignments-underbids-inquiries</code></td><td>Underbid inquiries</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Exports</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/address-export</code></td><td>Address export</td></tr>
+      <tr><td><code class="endpoint">/csvexport</code></td><td>CSV export</td></tr>
+      <tr><td><code class="endpoint">/export-dynamics</code></td><td>Dynamics export</td></tr>
+      <tr><td><code class="endpoint">/phone_bidder_cards</code></td><td>Phone bidder cards</td></tr>
+      <tr><td><code class="endpoint">/sticker-print</code></td><td>Sticker printing</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Files</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/get-file</code></td><td>Retrieve file</td></tr>
+      <tr><td><code class="endpoint">/private-files</code></td><td>Private file access</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Items</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/expertisings</code></td><td>Item expertising</td></tr>
+      <tr><td><code class="endpoint">/item-clone-or-move</code></td><td>Clone or move items</td></tr>
+      <tr><td><code class="endpoint">/item-dimensions</code></td><td>Item dimensions</td></tr>
+      <tr><td><code class="endpoint">/items-bulk</code></td><td>Bulk item operations</td></tr>
+      <tr><td><code class="endpoint">/items-bulk-edit</code></td><td>Edit multiple items</td></tr>
+      <tr><td><code class="endpoint">/items-histories</code></td><td>Item history</td></tr>
+      <tr><td><code class="endpoint">/items-json</code></td><td>Items in JSON format</td></tr>
+      <tr><td><code class="endpoint">/items-list</code></td><td>Item lists</td></tr>
+      <tr><td><code class="endpoint">/items-lots</code></td><td>Item lots</td></tr>
+      <tr><td><code class="endpoint">/items-public</code></td><td>Public item data</td></tr>
+      <tr><td><code class="endpoint">/item_tags</code></td><td>Item tags taxonomy</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Messages</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/consignment_lot_list</code></td><td>Consignment lot list messages</td></tr>
+      <tr><td><code class="endpoint">/email-templates</code></td><td>Email templates</td></tr>
+      <tr><td><code class="endpoint">/general-email-notifications</code></td><td>General email notifications</td></tr>
+      <tr><td><code class="endpoint">/mass-emails</code></td><td>Mass email sending</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Migration</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/migrate-bids</code></td><td>Migrate bids</td></tr>
+      <tr><td><code class="endpoint">/migrate-groups</code></td><td>Migrate groups</td></tr>
+      <tr><td><code class="endpoint">/migrate-items</code></td><td>Migrate items</td></tr>
+      <tr><td><code class="endpoint">/migrate-messages</code></td><td>Migrate messages</td></tr>
+      <tr><td><code class="endpoint">/migrates</code></td><td>General migration</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Orders</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/order-cancel-and-reissue</code></td><td>Cancel and reissue orders</td></tr>
+      <tr><td><code class="endpoint">/order-create-credit-note</code></td><td>Create credit note for order</td></tr>
+      <tr><td><code class="endpoint">/order-packing-info</code></td><td>Order packing info</td></tr>
+      <tr><td><code class="endpoint">/order-print</code></td><td>Order printing</td></tr>
+      <tr><td><code class="endpoint">/order-shipping-cost</code></td><td>Shipping cost for order</td></tr>
+      <tr><td><code class="endpoint">/order-split</code></td><td>Split orders</td></tr>
+      <tr><td><code class="endpoint">/orders-attached-text</code></td><td>Attached text to orders</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Payments</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/generate-cheque</code></td><td>Generate cheque</td></tr>
+      <tr><td><code class="endpoint">/payment</code></td><td>Payment processing</td></tr>
+      <tr><td><code class="endpoint">/payment-methods</code></td><td>Payment methods</td></tr>
+      <tr><td><code class="endpoint">/reset-statement-charges</code></td><td>Reset statement charges</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Public</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/article-public</code></td><td>Public articles</td></tr>
+      <tr><td><code class="endpoint">/catalogs-public</code></td><td>Public catalogs</td></tr>
+      <tr><td><code class="endpoint">/catalogue-parts-public</code></td><td>Public catalogue parts</td></tr>
+      <tr><td><code class="endpoint">/sales-public</code></td><td>Public sales data</td></tr>
+      <tr><td><code class="endpoint">/tasks-public</code></td><td>Public tasks</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Queue</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/watchdog</code></td><td>System watchdog/logs</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Sales</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/sale-access-type</code></td><td>Sale access types</td></tr>
+      <tr><td><code class="endpoint">/sale-search</code></td><td>Sale search</td></tr>
+      <tr><td><code class="endpoint">/sale-session-phone-bidders-card</code></td><td>Phone bidders for sessions</td></tr>
+      <tr><td><code class="endpoint">/sale-sessions</code></td><td>Sale sessions</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Shipping</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/shipping-provider-labels</code></td><td>Shipping labels from providers</td></tr>
+      <tr><td><code class="endpoint">/shipping_services</code></td><td>Shipping services</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Taxonomy</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/activity_types</code></td><td>Activity types</td></tr>
+      <tr><td><code class="endpoint">/additional_charges</code></td><td>Additional charges</td></tr>
+      <tr><td><code class="endpoint">/art_work_types</code></td><td>Art work types</td></tr>
+      <tr><td><code class="endpoint">/bid_steps</code></td><td>Bid steps</td></tr>
+      <tr><td><code class="endpoint">/catalogs</code></td><td>Catalogs</td></tr>
+      <tr><td><code class="endpoint">/catalogue-parts</code></td><td>Catalogue parts</td></tr>
+      <tr><td><code class="endpoint">/client_source</code></td><td>Client sources</td></tr>
+      <tr><td><code class="endpoint">/departments</code></td><td>Departments</td></tr>
+      <tr><td><code class="endpoint">/external_systems</code></td><td>External systems</td></tr>
+      <tr><td><code class="endpoint">/group_category</code></td><td>Group categories</td></tr>
+      <tr><td><code class="endpoint">/harmonized_code</code></td><td>Harmonized codes</td></tr>
+      <tr><td><code class="endpoint">/mediums</code></td><td>Mediums</td></tr>
+      <tr><td><code class="endpoint">/name_prefixes</code></td><td>Name prefixes</td></tr>
+      <tr><td><code class="endpoint">/note_tags</code></td><td>Note tags</td></tr>
+      <tr><td><code class="endpoint">/package_types</code></td><td>Package types</td></tr>
+      <tr><td><code class="endpoint">/payment_types</code></td><td>Payment types</td></tr>
+      <tr><td><code class="endpoint">/postal-thematics</code></td><td>Postal thematics</td></tr>
+      <tr><td><code class="endpoint">/printing_options</code></td><td>Printing options</td></tr>
+      <tr><td><code class="endpoint">/product_tax_code</code></td><td>Product tax codes</td></tr>
+      <tr><td><code class="endpoint">/relation_types</code></td><td>Relation types</td></tr>
+      <tr><td><code class="endpoint">/sale_access_type</code></td><td>Sale access types</td></tr>
+      <tr><td><code class="endpoint">/shipping_areas</code></td><td>Shipping areas</td></tr>
+      <tr><td><code class="endpoint">/shipping_method_types</code></td><td>Shipping method types</td></tr>
+      <tr><td><code class="endpoint">/signed_locations</code></td><td>Signed locations</td></tr>
+      <tr><td><code class="endpoint">/sub-symbols</code></td><td>Sub-symbols</td></tr>
+      <tr><td><code class="endpoint">/symbols</code></td><td>Symbols</td></tr>
+      <tr><td><code class="endpoint">/task_types</code></td><td>Task types</td></tr>
+      <tr><td><code class="endpoint">/tax_types</code></td><td>Tax types</td></tr>
+      <tr><td><code class="endpoint">/terms</code></td><td>General terms</td></tr>
+      <tr><td><code class="endpoint">/topics</code></td><td>Topics</td></tr>
+      <tr><td><code class="endpoint">/vat_amounts</code></td><td>VAT amounts</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Users</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/set-client-password</code></td><td>Set client password</td></tr>
+      <tr><td><code class="endpoint">/users-update</code></td><td>Update user data</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Viewings</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/viewings</code></td><td>Viewing appointments</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Commands</h2>
+  <table class="table table-sm param-table">
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="endpoint">/invoke-function</code></td><td>Invoke server functions</td></tr>
+      <tr><td><code class="endpoint">/invoke-function-public</code></td><td>Public function invocation</td></tr>
+      <tr><td><code class="endpoint">/node-revisions</code></td><td>Node revisions</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>
