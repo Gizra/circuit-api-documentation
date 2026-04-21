@@ -3,7 +3,10 @@
     "allow": [
       "Read(//home/bl/htdocs/circuitauction-backoffice/server/backoffice/modules/custom/server_restful/plugins/restful/**)",
       "Bash(find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(python3:*)",
+      "Bash(xargs perl:*)",
+      "Bash(ls -1d /media/bl/Disk2/htdocs/circuitauction-backoffice/server/backoffice/modules/custom/server_restful/plugins/restful/*/)"
     ],
     "deny": [],
     "ask": []

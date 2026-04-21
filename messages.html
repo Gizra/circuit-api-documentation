@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages &amp; Notifications - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Circuit Auction API v1.0</a>
+  </div>
+</nav>
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">API</a></li>
+      <li class="breadcrumb-item active">Messages &amp; Notifications</li>
+    </ol>
+  </nav>
+
+  <h1>Messages &amp; Notifications</h1>
+  <p class="lead">Endpoints for bid confirmations, email notifications, and phone bidder card management.</p>
+
+  <h2 class="mt-4 mb-3">Available Endpoints</h2>
+  <table class="table table-sm param-table mb-5">
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="badge bg-success badge-method">GET</span></td><td><code class="endpoint">/api/v1.0/bids_confirmation</code></td><td>List bid confirmations</td></tr>
+      <tr><td><span class="badge bg-primary badge-method">POST</span></td><td><code class="endpoint">/api/v1.0/bids_confirmation</code></td><td>Create bid confirmation</td></tr>
+      <tr><td><span class="badge bg-success badge-method">GET</span></td><td><code class="endpoint">/api/v1.0/consignments-underbids-inquiries</code></td><td>List consignment underbid inquiries</td></tr>
+      <tr><td><span class="badge bg-warning text-dark badge-method">PATCH</span></td><td><code class="endpoint">/api/v1.0/consignments-underbids-inquiries/{id}</code></td><td>Generate underbid report</td></tr>
+      <tr><td><span class="badge bg-success badge-method">GET</span></td><td><code class="endpoint">/api/v1.0/general-email-notifications</code></td><td>List general email notifications</td></tr>
+      <tr><td><span class="badge bg-success badge-method">GET</span></td><td><code class="endpoint">/api/v1.0/phone_bidder_cards</code></td><td>List phone bidder cards</td></tr>
+      <tr><td><span class="badge bg-primary badge-method">POST</span></td><td><code class="endpoint">/api/v1.0/phone_bidder_cards</code></td><td>Create / update phone bidder card</td></tr>
+      <tr><td><span class="badge bg-danger badge-method">DELETE</span></td><td><code class="endpoint">/api/v1.0/phone_bidder_cards</code></td><td>Delete phone bidder card</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 1. List Bid Confirmations -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/bids_confirmation</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">List Bid Confirmations</h5>
+      <p>Returns a paginated list of bid confirmations. Use filters to narrow results by sale.</p>
+
+      <h6>Query Parameters</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of records to return per page.</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (1-based).</td></tr>
+          <tr><td><code>filter[sale_id]</code></td><td>integer</td><td>Filter confirmations belonging to a specific sale.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X GET "https://backoffice.ddev.site/api/v1.0/bids_confirmation?filter[sale_id]=45&range=25&page=1" \
+  -H "Authorization: Bearer {token}"</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "1",
+      "client_id": "123",
+      "sale_id": "45",
+      "status": "confirmed",
+      "created": "2025-10-01T12:00:00Z"
+    }
+  ],
+  "count": 50
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 2. Create Bid Confirmation -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-primary badge-method">POST</span>
+      <code class="endpoint">/api/v1.0/bids_confirmation</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Create Bid Confirmation</h5>
+      <p>Creates a new bid confirmation record for a client, sale, and set of lots. A confirmation message or email is typically triggered downstream.</p>
+
+      <h6>Request Body</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>client_id</code></td><td>integer</td><td>Yes</td><td>ID of the client receiving the confirmation.</td></tr>
+          <tr><td><code>sale_id</code></td><td>integer</td><td>Yes</td><td>ID of the sale the confirmation relates to.</td></tr>
+          <tr><td><code>lot_ids</code></td><td>array of integers</td><td>Yes</td><td>Array of lot IDs to include in the confirmation.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X POST "https://backoffice.ddev.site/api/v1.0/bids_confirmation" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": 123,
+    "sale_id": 45,
+    "lot_ids": [101, 102, 105]
+  }'</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": {
+    "id": "2",
+    "client_id": "123",
+    "sale_id": "45",
+    "lot_ids": [101, 102, 105],
+    "status": "confirmed",
+    "created": "2025-10-02T09:30:00Z"
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 3. List Consignment Underbid Inquiries -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/consignments-underbids-inquiries</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">List Consignment Underbid Inquiries</h5>
+      <p>Returns a paginated list of underbid inquiries associated with consignments. Underbid inquiries are created when a consignor requests information about lots that did not meet the reserve price.</p>
+
+      <h6>Query Parameters</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of records to return per page.</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (1-based).</td></tr>
+          <tr><td><code>filter[consignment_id]</code></td><td>integer</td><td>Filter inquiries by consignment ID.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X GET "https://backoffice.ddev.site/api/v1.0/consignments-underbids-inquiries?filter[consignment_id]=88&range=25&page=1" \
+  -H "Authorization: Bearer {token}"</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "1",
+      "consignment_id": "88",
+      "item_id": "200",
+      "status": "pending"
+    }
+  ],
+  "count": 12
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 4. Generate Underbid Report -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-warning text-dark badge-method">PATCH</span>
+      <code class="endpoint">/api/v1.0/consignments-underbids-inquiries/{id}</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Generate Underbid Report</h5>
+      <p>Triggers report generation for the specified underbid inquiry. Once processed, the response includes a URL to the generated PDF report.</p>
+
+      <h6>Path Parameters</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>integer</td><td>The ID of the underbid inquiry for which to generate the report.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X PATCH "https://backoffice.ddev.site/api/v1.0/consignments-underbids-inquiries/1" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json"</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": {
+    "id": "1",
+    "report_url": "/files/underbid_report_1.pdf"
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 5. List General Email Notifications -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/general-email-notifications</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">List General Email Notifications</h5>
+      <p>Returns a paginated list of general email notifications sent by the system. Supports filtering by delivery status and recipient address.</p>
+
+      <h6>Query Parameters</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of records to return per page.</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (1-based).</td></tr>
+          <tr><td><code>filter[status]</code></td><td>string</td><td>Filter by delivery status (e.g. <code>sent</code>, <code>failed</code>, <code>pending</code>).</td></tr>
+          <tr><td><code>filter[recipient_email]</code></td><td>string</td><td>Filter notifications sent to a specific email address.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X GET "https://backoffice.ddev.site/api/v1.0/general-email-notifications?filter[status]=sent&range=25&page=1" \
+  -H "Authorization: Bearer {token}"</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "5",
+      "subject": "Your invoice is ready",
+      "recipient": "client@example.com",
+      "status": "sent",
+      "sent_at": "2025-10-10T08:00:00Z"
+    }
+  ],
+  "count": 320
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 6. List Phone Bidder Cards -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/phone_bidder_cards</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">List Phone Bidder Cards</h5>
+      <p>Returns a paginated list of phone bidder cards. Cards record the phone number and paddle assigned to a client who will bid by phone during a given sale session.</p>
+
+      <h6>Query Parameters</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of records to return per page.</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (1-based).</td></tr>
+          <tr><td><code>filter[sale_id]</code></td><td>integer</td><td>Filter cards by sale ID.</td></tr>
+          <tr><td><code>filter[session_id]</code></td><td>integer</td><td>Filter cards by session ID.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X GET "https://backoffice.ddev.site/api/v1.0/phone_bidder_cards?filter[sale_id]=45&range=25&page=1" \
+  -H "Authorization: Bearer {token}"</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "10",
+      "sale_id": "45",
+      "client_id": "123",
+      "paddle_number": "42",
+      "phone": "+1-555-0100"
+    }
+  ],
+  "count": 80
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 7. Create / Update Phone Bidder Card -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-primary badge-method">POST</span>
+      <code class="endpoint">/api/v1.0/phone_bidder_cards</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Create / Update Phone Bidder Card</h5>
+      <p>Creates a new phone bidder card or updates an existing one. If a card already exists for the given client and session, it will be updated in place.</p>
+
+      <h6>Request Body</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>sale_id</code></td><td>integer</td><td>Yes</td><td>ID of the sale.</td></tr>
+          <tr><td><code>client_id</code></td><td>integer</td><td>Yes</td><td>ID of the client who will bid by phone.</td></tr>
+          <tr><td><code>session_id</code></td><td>integer</td><td>Yes</td><td>ID of the sale session.</td></tr>
+          <tr><td><code>paddle_number</code></td><td>string</td><td>Yes</td><td>Paddle number assigned to the phone bidder.</td></tr>
+          <tr><td><code>phone</code></td><td>string</td><td>Yes</td><td>Phone number to call during the session.</td></tr>
+          <tr><td><code>lots</code></td><td>array of integers</td><td>No</td><td>Array of lot IDs the client intends to bid on.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request</h6>
+      <pre><code class="language-bash">curl -X POST "https://backoffice.ddev.site/api/v1.0/phone_bidder_cards" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sale_id": 45,
+    "client_id": 123,
+    "session_id": 7,
+    "paddle_number": "42",
+    "phone": "+1-555-0100",
+    "lots": [201, 205, 210]
+  }'</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": {
+    "id": "10",
+    "sale_id": "45",
+    "client_id": "123",
+    "session_id": "7",
+    "paddle_number": "42",
+    "phone": "+1-555-0100",
+    "lots": [201, 205, 210]
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- 8. Delete Phone Bidder Card -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-danger badge-method">DELETE</span>
+      <code class="endpoint">/api/v1.0/phone_bidder_cards</code>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Delete Phone Bidder Card</h5>
+      <p>Deletes one or more phone bidder cards. Supply a single <code>id</code> or an array of <code>ids</code> to delete in bulk.</p>
+
+      <h6>Request Body</h6>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>integer</td><td>One of <code>id</code> or <code>ids</code></td><td>ID of a single card to delete.</td></tr>
+          <tr><td><code>ids</code></td><td>array of integers</td><td>One of <code>id</code> or <code>ids</code></td><td>Array of card IDs to delete in bulk.</td></tr>
+        </tbody>
+      </table>
+
+      <h6 class="mt-3">Example Request — single</h6>
+      <pre><code class="language-bash">curl -X DELETE "https://backoffice.ddev.site/api/v1.0/phone_bidder_cards" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{ "id": 10 }'</code></pre>
+
+      <h6 class="mt-3">Example Request — bulk</h6>
+      <pre><code class="language-bash">curl -X DELETE "https://backoffice.ddev.site/api/v1.0/phone_bidder_cards" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{ "ids": [10, 11, 12] }'</code></pre>
+
+      <h6 class="mt-3">Response</h6>
+      <pre><code class="language-json">{
+  "data": {
+    "deleted": true
+  }
+}</code></pre>
+    </div>
+  </div>
+
+</div>
+<script src="assets/js/sidebar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>

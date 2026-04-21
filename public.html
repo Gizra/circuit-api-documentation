@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Public Endpoints - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Circuit Auction API v1.0</a>
+  </div>
+</nav>
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">API</a></li>
+      <li class="breadcrumb-item active">Public Endpoints</li>
+    </ol>
+  </nav>
+
+  <h1>Public Endpoints</h1>
+  <p class="lead">Unauthenticated endpoints accessible without a Bearer token, intended for public-facing frontends.</p>
+
+  <div class="alert alert-info">
+    These endpoints do <strong>not</strong> require authentication. Use the <code>?lang=en</code> query parameter to receive translated fields in the desired language.
+  </div>
+
+  <!-- Public Articles -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/article-public</code>
+    </div>
+    <div class="card-body">
+      <p>Returns a paginated list of publicly published articles, such as news, previews, and press releases.</p>
+      <h5>Parameters</h5>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of results per page (default: 25)</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (0-based)</td></tr>
+          <tr><td><code>sort</code></td><td>string</td><td>Field to sort by (e.g. <code>created</code>)</td></tr>
+          <tr><td><code>filter[status]</code></td><td>string</td><td>Filter by article status (e.g. <code>published</code>)</td></tr>
+          <tr><td><code>lang</code></td><td>string</td><td>Language code for translated fields (e.g. <code>en</code>, <code>fr</code>)</td></tr>
+        </tbody>
+      </table>
+      <h5 class="mt-3">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/article-public?range=25&page=0&lang=en</code></pre>
+      <h5 class="mt-3">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "1",
+      "title": "Spring Auction Preview",
+      "body": "...",
+      "created": "2025-09-01T00:00:00Z"
+    }
+  ],
+  "count": 42
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Public Catalogs -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/catalogs-public</code>
+    </div>
+    <div class="card-body">
+      <p>Returns a paginated list of publicly visible auction catalogs.</p>
+      <h5>Parameters</h5>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of results per page (default: 25)</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (0-based)</td></tr>
+          <tr><td><code>lang</code></td><td>string</td><td>Language code for translated fields (e.g. <code>en</code>, <code>fr</code>)</td></tr>
+        </tbody>
+      </table>
+      <h5 class="mt-3">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/catalogs-public?range=25&page=0&lang=en</code></pre>
+      <h5 class="mt-3">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "5",
+      "name": "Spring 2025",
+      "sale_id": "12"
+    }
+  ],
+  "count": 10
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Public Catalogue Parts -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/catalogue-parts-public</code>
+    </div>
+    <div class="card-body">
+      <p>Returns publicly visible parts (sections or chapters) within a given catalog.</p>
+      <h5>Parameters</h5>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of results per page (default: 25)</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (0-based)</td></tr>
+          <tr><td><code>filter[catalog_id]</code></td><td>string</td><td>Filter by catalog node ID</td></tr>
+          <tr><td><code>lang</code></td><td>string</td><td>Language code for translated fields (e.g. <code>en</code>, <code>fr</code>)</td></tr>
+        </tbody>
+      </table>
+      <h5 class="mt-3">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/catalogue-parts-public?filter[catalog_id]=5&lang=en</code></pre>
+      <h5 class="mt-3">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "3",
+      "label": "Part A",
+      "catalog_id": "5"
+    }
+  ],
+  "count": 20
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Public Items -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/items-public</code>
+    </div>
+    <div class="card-body">
+      <p>Returns a paginated list of publicly visible auction lots. Use filters to narrow results by sale or status.</p>
+      <h5>Parameters</h5>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of results per page (default: 25)</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (0-based)</td></tr>
+          <tr><td><code>sort</code></td><td>string</td><td>Field to sort by (e.g. <code>lot_number</code>)</td></tr>
+          <tr><td><code>filter[sale_id]</code></td><td>string</td><td>Filter by sale node ID</td></tr>
+          <tr><td><code>filter[status]</code></td><td>string</td><td>Filter by item status (e.g. <code>active</code>)</td></tr>
+          <tr><td><code>lang</code></td><td>string</td><td>Language code for translated fields (e.g. <code>en</code>, <code>fr</code>)</td></tr>
+        </tbody>
+      </table>
+      <h5 class="mt-3">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/items-public?filter[sale_id]=12&range=25&lang=en</code></pre>
+      <h5 class="mt-3">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "100",
+      "title": "Baroque Oil Painting",
+      "estimate_low": 5000,
+      "estimate_high": 8000,
+      "sale_id": "12",
+      "lot_number": "15"
+    }
+  ],
+  "count": 385
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Public Sales -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/sales-public</code>
+    </div>
+    <div class="card-body">
+      <p>Returns a paginated list of publicly visible auction sales.</p>
+      <h5>Parameters</h5>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of results per page (default: 25)</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (0-based)</td></tr>
+          <tr><td><code>sort</code></td><td>string</td><td>Field to sort by (e.g. <code>date</code>)</td></tr>
+          <tr><td><code>filter[status]</code></td><td>string</td><td>Filter by sale status (e.g. <code>upcoming</code>, <code>closed</code>)</td></tr>
+          <tr><td><code>lang</code></td><td>string</td><td>Language code for translated fields (e.g. <code>en</code>, <code>fr</code>)</td></tr>
+        </tbody>
+      </table>
+      <h5 class="mt-3">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/sales-public?filter[status]=upcoming&lang=en</code></pre>
+      <h5 class="mt-3">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "12",
+      "title": "Spring Fine Art Auction",
+      "date": "2025-11-15",
+      "status": "upcoming"
+    }
+  ],
+  "count": 6
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Public Tasks -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/v1.0/tasks-public</code>
+    </div>
+    <div class="card-body">
+      <p>Returns publicly visible event tasks such as viewing appointments, open days, and other scheduled activities associated with a sale.</p>
+      <h5>Parameters</h5>
+      <table class="table table-sm param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>range</code></td><td>integer</td><td>Number of results per page (default: 25)</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (0-based)</td></tr>
+          <tr><td><code>filter[sale_id]</code></td><td>string</td><td>Filter tasks by sale node ID</td></tr>
+        </tbody>
+      </table>
+      <h5 class="mt-3">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/tasks-public?filter[sale_id]=12</code></pre>
+      <h5 class="mt-3">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": "7",
+      "title": "Public Viewing",
+      "date": "2025-11-10",
+      "location": "Main Gallery"
+    }
+  ],
+  "count": 3
+}</code></pre>
+    </div>
+  </div>
+
+</div>
+<script src="assets/js/sidebar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
