@@ -12,6 +12,11 @@
     { label: 'Home', href: 'index.html' },
     { label: 'Authentication', href: 'authentication.html' },
     {
+      label: 'Bid Server', id: 'sb-bid-server', children: [
+        { label: 'One-Time Login to App', href: 'bid-server/login-app-mail.html' },
+      ]
+    },
+    {
       label: 'Clients', id: 'sb-clients', children: [
         { label: 'List Clients',     href: 'clients/list.html' },
         { label: 'Get Client',       href: 'clients/get.html' },

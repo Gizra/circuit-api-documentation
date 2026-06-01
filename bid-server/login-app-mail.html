@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One-Time Login to App - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API v1.0</a>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item">Bid Server</li>
+      <li class="breadcrumb-item active" aria-current="page">One-Time Login to App</li>
+    </ol>
+  </nav>
+
+  <h1>One-Time Login to App</h1>
+  <p class="lead">Send a one-time login link to a bidder by email. If the user does not yet exist on the target site, they are created on the fly from the request fields.</p>
+
+  <!-- Server / auth callout -->
+  <div class="alert alert-warning border-warning">
+    <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Different server &mdash; not the Backoffice API</h5>
+    <p class="mb-2">
+      This endpoint lives on the <strong>Bid Server</strong>, <em>not</em> the Backoffice API documented in the rest of this site. The base URL, the authentication scheme, and the response envelope are all different from the other endpoints.
+    </p>
+    <ul class="mb-0">
+      <li><strong>Base URL (test):</strong> <code>https://test-bids-eu.circuitauction.com/</code></li>
+      <li><strong>Authentication:</strong> an <code>api_key</code> <em>query parameter</em> &mdash; <u>not</u> the <code>Authorization: Bearer &lt;token&gt;</code> header used elsewhere.</li>
+      <li><strong>Audience:</strong> the public-facing bidder app, not the backoffice staff app.</li>
+    </ul>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/api/login-app-mail</code>
+    </div>
+    <div class="card-body">
+
+      <h5>Query Parameters</h5>
+      <p class="text-muted small mb-2">Always required:</p>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>api_key</code></td>
+            <td>string</td>
+            <td>Shared secret configured server-side. Requests without it, or with a mismatching value, return <code>400 Bad Request</code>.</td>
+            <td><code>?api_key=rVpbihBzYpnHgSQu4PArLu9WTubtUVzEPjwWxHHEgf9</code></td>
+          </tr>
+          <tr>
+            <td><code>mail</code></td>
+            <td>string</td>
+            <td>The bidder's email address. Validated with <code>FILTER_VALIDATE_EMAIL</code>.</td>
+            <td><code>?mail=jane@example.com</code></td>
+          </tr>
+          <tr>
+            <td><code>site</code></td>
+            <td>string</td>
+            <td>Site login name. Must resolve to an existing site on the bid server.</td>
+            <td><code>?site=acme-auctions</code></td>
+          </tr>
+          <tr>
+            <td><code>sale_number</code></td>
+            <td>string</td>
+            <td>Sale number within that site. Must resolve to an existing sale.</td>
+            <td><code>?sale_number=2025-03</code></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-muted small mb-2 mt-3">Additionally required <em>only when the user does not yet exist</em> and must be created:</p>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>first_name</code></td>
+            <td>string</td>
+            <td>Given name for the new user.</td>
+            <td><code>?first_name=Jane</code></td>
+          </tr>
+          <tr>
+            <td><code>last_name</code></td>
+            <td>string</td>
+            <td>Family name for the new user.</td>
+            <td><code>?last_name=Doe</code></td>
+          </tr>
+          <tr>
+            <td><code>phone</code></td>
+            <td>string</td>
+            <td>Mobile phone number. Stored on the user profile.</td>
+            <td><code>?phone=+15551234567</code></td>
+          </tr>
+          <tr>
+            <td><code>pass</code></td>
+            <td>string</td>
+            <td>Initial password for the new account. Required by Drupal's <code>user_save()</code>; the bidder normally logs in via the one-time link rather than this password.</td>
+            <td><code>?pass=Tmp%21SecurePass</code></td>
+          </tr>
+          <tr>
+            <td><code>language</code></td>
+            <td>string</td>
+            <td>Optional UI language for the user (and for the email). Defaults to <code>en</code>.</td>
+            <td><code>?language=fr</code></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-info mt-3">
+        <strong>How it decides:</strong> the server looks up a user by <code>mail + site</code>. If a match is found the existing user is reused and the create-only parameters are ignored. If no match is found, all five create-only parameters above must be present or the request fails with <code>Missing required property '&lt;name&gt;'</code>.
+      </div>
+
+      <h5 class="mt-4">Example using cURL</h5>
+      <pre><code class="language-bash">curl -G "https://test-bids-eu.circuitauction.com/api/login-app-mail" \
+  --data-urlencode "api_key=rVpbihBzYpnHgSQu4PArLu9WTubtUVzEPjwWxHHEgf9" \
+  --data-urlencode "mail=jane@example.com" \
+  --data-urlencode "site=acme-auctions" \
+  --data-urlencode "sale_number=2025-03" \
+  --data-urlencode "first_name=Jane" \
+  --data-urlencode "last_name=Doe" \
+  --data-urlencode "phone=+15551234567" \
+  --data-urlencode "pass=Tmp!SecurePass" \
+  --data-urlencode "language=en"</code></pre>
+
+      <h5 class="mt-4">Example using JavaScript</h5>
+      <pre><code class="language-javascript">const params = new URLSearchParams({
+  api_key: 'rVpbihBzYpnHgSQu4PArLu9WTubtUVzEPjwWxHHEgf9',
+  mail: 'jane@example.com',
+  site: 'acme-auctions',
+  sale_number: '2025-03',
+  // Required only when creating the user:
+  first_name: 'Jane',
+  last_name: 'Doe',
+  phone: '+15551234567',
+  pass: 'Tmp!SecurePass',
+  language: 'en',
+});
+
+const response = await fetch(
+  `https://test-bids-eu.circuitauction.com/api/login-app-mail?${params}`,
+  { method: 'GET' }
+);
+const result = await response.json();</code></pre>
+
+      <h5 class="mt-4">Success Response</h5>
+      <pre><code class="language-json">{
+  "data": {
+    "email sent": true
+  }
+}</code></pre>
+      <p class="small text-muted">The email is dispatched asynchronously by the bid server; a <code>true</code> response means the request was accepted, not that the message has already landed in the user's inbox.</p>
+
+      <h5 class="mt-4">Error Responses</h5>
+      <p>All validation failures return <code>400 Bad Request</code> with a Restful-style error envelope. The <code>title</code> field varies:</p>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Cause</th>
+            <th><code>title</code></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr><td>Missing <code>api_key</code></td><td>No api key has been provided.</td></tr>
+          <tr><td>Wrong <code>api_key</code></td><td>Invalid api key.</td></tr>
+          <tr><td>Missing <code>mail</code></td><td>No user e-mail has been provided.</td></tr>
+          <tr><td>Malformed <code>mail</code></td><td>Invalid email.</td></tr>
+          <tr><td>Missing <code>site</code></td><td>Site must be provided.</td></tr>
+          <tr><td>Unknown <code>site</code></td><td>Invalid site name: "&lt;name&gt;".</td></tr>
+          <tr><td>Missing <code>sale_number</code></td><td>Sale number must be provided.</td></tr>
+          <tr><td>Unknown <code>sale_number</code></td><td>Invalid sale number: "&lt;number&gt;".</td></tr>
+          <tr><td>New user, missing one of <code>mail</code> / <code>first_name</code> / <code>last_name</code> / <code>phone</code></td><td>Missing required property '&lt;field&gt;'</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <pre><code class="language-json">{
+  "title": "Invalid api key.",
+  "status": 400,
+  "type": "",
+  "detail": ""
+}</code></pre>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="../assets/js/sidebar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
