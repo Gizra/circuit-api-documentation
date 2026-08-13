@@ -108,6 +108,7 @@
       ]
     },
     { label: 'Notes',                 href: 'notes/list.html' },
+    { label: 'Tasks',                 href: 'tasks/list.html' },
     { label: 'Payments',              href: 'payments.html' },
     { label: 'Migration',             href: 'migration.html' },
     { label: 'Messages',              href: 'messages.html' },

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks - Circuit Auction API</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+      body { padding-top: 70px; background-color: #f8f9fa; }
+      .navbar-brand { font-weight: bold; }
+      .main-content { padding: 2rem; }
+      pre { background: #f4f4f4; padding: 1rem; border-radius: 0.375rem; position: relative; }
+      .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; }
+      .endpoint { font-family: 'Courier New', monospace; background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+      .badge-method { font-size: 0.7em; padding: 0.3em 0.6em; }
+      .param-table th { background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="../index.html">Circuit Auction API v1.0</a>
+  </div>
+</nav>
+
+<div class="container main-content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">API</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Tasks</li>
+    </ol>
+  </nav>
+
+  <h1>Tasks</h1>
+  <p class="lead">Workflow tasks attached to clients, consignments, items, sales, and orders. This resource powers the <strong>Tasks tab</strong> on entity pages in the backoffice.</p>
+
+  <div class="alert alert-warning">
+    <strong>Permissions:</strong> users <em>without</em> the <code>view task content</code> permission only receive tasks
+    <em>assigned to them</em> that <em>can start</em> — the list and its <code>count</code> are silently restricted.
+    Users with the permission see all tasks.
+  </div>
+
+  <!-- ============================ LIST ============================ -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-success badge-method">GET</span>
+      <code class="endpoint">/tasks</code>
+    </div>
+    <div class="card-body">
+      <h5>Query Parameters</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>filter[reference]</code></td>
+            <td>integer</td>
+            <td>Tasks attached to a specific node (client, consignment, item, sale, or order)</td>
+            <td><code>?filter[reference]=1890911</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[status]</code></td>
+            <td>integer</td>
+            <td>Task status: <code>0</code> = can start, <code>1</code> = can't start, <code>2</code> = completed. A computed filter — it expands to conditions on the <code>completed</code> and <code>can_start</code> fields</td>
+            <td><code>?filter[status]=0</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[completed]</code></td>
+            <td>boolean</td>
+            <td>Filter by the completed flag directly</td>
+            <td><code>?filter[completed]=0</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[can_start]</code></td>
+            <td>boolean</td>
+            <td>Filter by the can-start flag directly</td>
+            <td><code>?filter[can_start]=1</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[assignee]</code></td>
+            <td>integer</td>
+            <td>Tasks assigned to a staff user, by uid</td>
+            <td><code>?filter[assignee]=161</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[assignee_uuid]</code></td>
+            <td>string</td>
+            <td>Tasks assigned to a staff user, by user UUID (resolved via <code>field_uuid</code>)</td>
+            <td><code>?filter[assignee_uuid]=2a66b8b2-...</code></td>
+          </tr>
+          <tr>
+            <td><code>filter[task_category]</code></td>
+            <td>integer</td>
+            <td>Filter by task type, as a <code>task_types</code> taxonomy term ID</td>
+            <td><code>?filter[task_category]=13480</code></td>
+          </tr>
+          <tr>
+            <td><code>sale_id</code> / <code>sale_uuid</code></td>
+            <td>integer / string</td>
+            <td>Sale context. When present (and no <code>reference</code> is given) the list is scoped to tasks related to that sale — including tasks on the sale's items, consignments and orders</td>
+            <td><code>?sale_uuid=live-68c8...</code></td>
+          </tr>
+          <tr>
+            <td><code>reference</code> <em>(top level)</em></td>
+            <td>integer</td>
+            <td>Scope the list to a sale by node ID, same mechanism as the sale context (this is <em>not</em> the same as <code>filter[reference]</code>)</td>
+            <td><code>?reference=792</code></td>
+          </tr>
+          <tr>
+            <td><code>referenced_bundle</code></td>
+            <td>string</td>
+            <td>Set to <code>client</code> to get only tasks whose reference is a client (client tasks have no sale context)</td>
+            <td><code>?referenced_bundle=client</code></td>
+          </tr>
+          <tr>
+            <td><code>sort</code></td>
+            <td>string</td>
+            <td>Sort order, prefix with <code>-</code> for descending. Sorting by <code>status</code> orders by completed + can-start</td>
+            <td><code>?sort=-created</code></td>
+          </tr>
+          <tr>
+            <td><code>range</code> / <code>page</code></td>
+            <td>integer</td>
+            <td>Standard pagination</td>
+            <td><code>?range=25&amp;page=0</code></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Example Request</h5>
+      <pre><code class="language-bash">GET /api/v1.0/tasks?filter[reference]=1890911&amp;filter[status]=0&amp;sort=-created</code></pre>
+
+      <h5 class="mt-4">Response</h5>
+      <pre><code class="language-json">{
+  "data": [
+    {
+      "id": 2153810,
+      "label": "1890911 - Client edited alert",
+      "published": "1",
+      "created": 1785957575000,
+      "updated": 1785957575000,
+      "author": {
+        "id": "161",
+        "label": "John Stewart",
+        "mail": "john@circuitauction.com",
+        "value": "161",
+        "uuid": "2a66b8b2-2fae-4179-9989-f8e5b05c98ad"
+      },
+      "vid": "6472347",
+      "task_category": "13480",
+      "type": "Client edited alert",
+      "completed": false,
+      "can_start": true,
+      "note": {
+        "value": "Change log: ...",
+        "summary": null,
+        "format": "full_html",
+        "safe_value": "<p>Change log: ...</p>",
+        "safe_summary": ""
+      },
+      "status": 0,
+      "row_class": "can_start",
+      "due_date": "1786043976",
+      "assignee_uid": "161",
+      "assignee": "2a66b8b2-2fae-4179-9989-f8e5b05c98ad",
+      "reference": {
+        "id": "1890911",
+        "uuid": "8f0e3c7a-d7f3-4750-b0b4-489dc9f92c8b",
+        "label": "Adam Smith - 7246",
+        "type": "client",
+        "url_api": "/node/1890911",
+        "app_url": "https://backoffice.example.com/app#dashboard/clients/1890911/client"
+      },
+      "sale": null
+    }
+  ],
+  "count": 1,
+  "self": {
+    "title": "Self",
+    "href": "https://backoffice.example.com/en/api/v1.0/tasks"
+  }
+}</code></pre>
+
+      <h5 class="mt-4">Response Fields</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>id</code></td>
+            <td>integer</td>
+            <td>Task node ID</td>
+          </tr>
+          <tr>
+            <td><code>label</code></td>
+            <td>string</td>
+            <td>Task title</td>
+          </tr>
+          <tr>
+            <td><code>published</code></td>
+            <td>string</td>
+            <td>Published status ("1" = published)</td>
+          </tr>
+          <tr>
+            <td><code>created</code> / <code>updated</code></td>
+            <td>number</td>
+            <td>Unix timestamps in milliseconds</td>
+          </tr>
+          <tr>
+            <td><code>author</code></td>
+            <td>object</td>
+            <td>User who created the task (id, label, mail, uuid)</td>
+          </tr>
+          <tr>
+            <td><code>vid</code></td>
+            <td>string</td>
+            <td>Node revision ID</td>
+          </tr>
+          <tr>
+            <td><code>task_category</code></td>
+            <td>string</td>
+            <td>Task type as a <code>task_types</code> taxonomy term ID</td>
+          </tr>
+          <tr>
+            <td><code>type</code></td>
+            <td>string</td>
+            <td>Task type label (e.g. "Describe item", "Under Extension Request", "Client edited alert")</td>
+          </tr>
+          <tr>
+            <td><code>completed</code></td>
+            <td>boolean</td>
+            <td>Whether the task is done</td>
+          </tr>
+          <tr>
+            <td><code>can_start</code></td>
+            <td>boolean</td>
+            <td>Whether the task can start. Dependent tasks are created with <code>false</code> and flip to <code>true</code> when the task they depend on completes</td>
+          </tr>
+          <tr>
+            <td><code>note</code></td>
+            <td>object</td>
+            <td>Task body (Drupal text field object with <code>value</code> / <code>safe_value</code>); may contain HTML, e.g. client-edit change logs</td>
+          </tr>
+          <tr>
+            <td><code>status</code></td>
+            <td>integer</td>
+            <td>Computed status: <code>0</code> = can start, <code>1</code> = can't start, <code>2</code> = completed</td>
+          </tr>
+          <tr>
+            <td><code>row_class</code></td>
+            <td>string</td>
+            <td>Computed CSS class for the tasks table: <code>can_start</code>, <code>cant_start</code> or <code>completed</code></td>
+          </tr>
+          <tr>
+            <td><code>due_date</code></td>
+            <td>string</td>
+            <td>Due date as a Unix timestamp (seconds)</td>
+          </tr>
+          <tr>
+            <td><code>assignee_uid</code></td>
+            <td>string</td>
+            <td>Assigned staff user's uid (null when unassigned)</td>
+          </tr>
+          <tr>
+            <td><code>assignee</code></td>
+            <td>string</td>
+            <td>Assigned staff user's UUID (null when unassigned)</td>
+          </tr>
+          <tr>
+            <td><code>reference</code></td>
+            <td>object</td>
+            <td>Teaser of the node the task is attached to: <code>id</code>, <code>uuid</code>, <code>label</code>, <code>type</code> (client / consignment / item / sale / order), <code>url_api</code>, <code>app_url</code>. Order teasers add <code>sub_type</code>; sale teasers add <code>sale_status</code> and <code>lots_locked</code></td>
+          </tr>
+          <tr>
+            <td><code>sale</code></td>
+            <td>object|null</td>
+            <td>Teaser of the related sale, resolved from the reference (the sale itself, or the item's sale). <code>null</code> for e.g. client tasks</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ CREATE ============================ -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-primary badge-method">POST</span>
+      <code class="endpoint">/tasks</code>
+    </div>
+    <div class="card-body">
+      <p>Create a task. This is what the <em>Add a task</em> form on entity pages submits.</p>
+
+      <h5>Body Parameters</h5>
+      <div class="table-responsive">
+        <table class="table table-sm param-table">
+          <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><code>label</code></td>
+            <td>string</td>
+            <td>Task title</td>
+          </tr>
+          <tr>
+            <td><code>task_category</code></td>
+            <td>integer</td>
+            <td>Task type — a <code>task_types</code> taxonomy term ID</td>
+          </tr>
+          <tr>
+            <td><code>reference</code></td>
+            <td>integer</td>
+            <td>Node ID of the entity the task belongs to (client, consignment, item, sale, order)</td>
+          </tr>
+          <tr>
+            <td><code>assignee_uid</code></td>
+            <td>integer|null</td>
+            <td>Assign by staff uid; <code>null</code> clears the assignee</td>
+          </tr>
+          <tr>
+            <td><code>assignee_uuid</code></td>
+            <td>string|null</td>
+            <td>Assign by staff user UUID. Validated: returns <code>400</code> if the UUID is unknown or the user is blocked. <code>null</code> clears the assignee</td>
+          </tr>
+          <tr>
+            <td><code>can_start</code></td>
+            <td>boolean</td>
+            <td><code>true</code> = "Can start", <code>false</code> = "Can't start"</td>
+          </tr>
+          <tr>
+            <td><code>completed</code></td>
+            <td>boolean</td>
+            <td>Mark the task as completed</td>
+          </tr>
+          <tr>
+            <td><code>due_date</code></td>
+            <td>integer</td>
+            <td>Due date as a Unix timestamp (seconds)</td>
+          </tr>
+          <tr>
+            <td><code>note</code></td>
+            <td>string</td>
+            <td>Task body / note</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h5 class="mt-4">Example Request</h5>
+      <pre><code class="language-bash">POST /api/v1.0/tasks
+Content-Type: application/json
+
+{
+  "label": "Photograph item",
+  "task_category": 13471,
+  "reference": 1890911,
+  "assignee_uid": 161,
+  "can_start": true,
+  "due_date": 1786043976
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- ============================ UPDATE ============================ -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-warning text-dark badge-method">PATCH</span>
+      <code class="endpoint">/tasks/{id}</code>
+    </div>
+    <div class="card-body">
+      <p>Update a task — same fields as create. Typical uses: mark a task completed, re-assign it, or change the due date. The backoffice tasks table sends a PATCH when you click <em>Save</em> on a row.</p>
+
+      <h5 class="mt-4">Example Request</h5>
+      <pre><code class="language-bash">PATCH /api/v1.0/tasks/2153810
+Content-Type: application/json
+
+{
+  "completed": true
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- ============================ DELETE ============================ -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <span class="badge bg-danger badge-method">DELETE</span>
+      <code class="endpoint">/tasks/{id}</code>
+    </div>
+    <div class="card-body">
+      <p>Delete a task. Returns <code>204 No Content</code> on success. The backoffice tasks table sends this when you click <em>Delete</em> on a row.</p>
+      <pre><code class="language-bash">DELETE /api/v1.0/tasks/2153810</code></pre>
+    </div>
+  </div>
+
+  <div class="alert alert-info mt-4">
+    <h6 class="alert-heading">Usage Notes</h6>
+    <ul class="mb-0">
+      <li>Resource: node bundle <code>task</code> — plugin <code>tasks__1_0</code> (<code>ServerTasksResource</code>) in <code>server_restful/plugins/restful/node/tasks/1.0/</code>.</li>
+      <li><strong>Default tasks</strong> are created automatically by the system (e.g. "Describe item" when an item is created; "Client edited alert" when a client edits their own details; "Under Extension Request" from the expertising workflow). <strong>Dependent tasks</strong> are created with <code>can_start = false</code> and unlock when their prerequisite completes.</li>
+      <li><code>status</code> / <code>row_class</code> are computed from <code>completed</code> + <code>can_start</code>; when filtering or sorting by <code>status</code> the resource translates it back to those two fields.</li>
+      <li>Note the two different reference parameters: <code>filter[reference]</code> = tasks of one specific node; top-level <code>reference</code> (or <code>sale_id</code>/<code>sale_uuid</code>) = all tasks related to a sale.</li>
+      <li>Timestamps: <code>created</code>/<code>updated</code> are in <em>milliseconds</em>, <code>due_date</code> is in <em>seconds</em>.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script src="../assets/js/sidebar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-outline-secondary copy-btn';
+    button.textContent = 'Copy';
+    button.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = 'Copy', 2000);
+    };
+    block.parentElement.appendChild(button);
+  });
+</script>
+</body>
+</html>
